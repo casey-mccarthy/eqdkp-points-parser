@@ -1,7 +1,7 @@
 
 # EQDKP Parser Project
 
-This project is a DKP (Dragon Kill Points) parser that processes XML files containing player and point information for an online game. It aggregates and associates characters based on their main and alt designations, fetching data from an API, and outputs this information in a clean and structured way using an interactive CLI.
+This project is a DKP (Dragon Kill Points) parser that exports point data from an EQDKP data via XML files. It then aggregates and associates characters based on their main and alt designations and outputs this information in a clean and structured way using an interactive CLI.
 
 ## Example Output
 
