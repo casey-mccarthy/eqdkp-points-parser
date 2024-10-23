@@ -4,7 +4,7 @@
     <name>Kittens Who Say Meow</name>
     <guild>Kittens Who Say Meow</guild>
     <dkp_name>DKP</dkp_name>
-    <version>2.3</version>
+    <version>2.3.39</version>
     <layout>user_normal</layout>
     <base_layout>normal</base_layout>
   </eqdkp>
@@ -17,8 +17,8 @@
   </game>
   <info>
     <with_twink>1</with_twink>
-    <date>23.10.24 19:12:31</date>
-    <timestamp>1729710751</timestamp>
+    <date>23.10.24 20:18:27</date>
+    <timestamp>1729714707</timestamp>
     <total_players>3570</total_players>
     <total_items>9002</total_items>
   </info>
