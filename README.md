@@ -16,7 +16,6 @@ Here’s an example of the console output:
 - **Fetch Data from API**: Securely fetches data from a remote API using an API key stored in an environment file.
 - **Interactive Command Line Interface**: Provides an interactive CLI for viewing data.
 - **Logging**: Logs all processing steps, including when main characters and alts are associated, and captures user commands and errors.
-- **ASCII Art**: Launches with a cool ASCII header using the `pyfiglet` library for an engaging user experience.
 
 ## Data Model
 
@@ -32,9 +31,11 @@ The output data model is as follows:
 
 ## Installation
 
+Assuming you already have Python installed, follow these steps to set up the project:
+
 1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/casey-mccarthy/eqdkp-points-parser.git
    ```
 
 2. **Set up a virtual environment**:
@@ -61,6 +62,7 @@ The output data model is as follows:
    ```
    API_KEY_CORE_READ=your_api_key_here
    ```
+   This key can be located under your `Private API-Key` section of your profile on the EQDKP site.
 
 ## Usage
 
