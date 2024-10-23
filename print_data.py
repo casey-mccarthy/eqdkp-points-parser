@@ -1,6 +1,5 @@
 import pandas as pd
 import random
-import argparse
 from rich.table import Table
 from rich.console import Console
 
@@ -18,15 +17,30 @@ def print_data(csv_file, character_name=None, top=None, random_count=None):
     table.add_column("Current Points", justify="right", style="red")
 
     if character_name:
-        # Filter the DataFrame by character name
-        filtered_row = df[df['main_character'].str.lower() == character_name.lower()]
+        # Normalize character name for comparison
+        character_name_lower = character_name.lower()
+
+        # Try to find the character as a main character
+        filtered_row = df[df['main_character'].str.lower() == character_name_lower]
+        
         if not filtered_row.empty:
+            # Found a match in main characters
             row = filtered_row.iloc[0]
             add_row_to_table(table, row)
         else:
-            console = Console()
-            console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
-            return
+            # Check if the character is an alt
+            found = False
+            for _, row in df.iterrows():
+                alts = eval(row['alts'])  # Converts the string back to a list of tuples
+                if any(alt_name.lower() == character_name_lower for _, alt_name in alts):
+                    add_row_to_table(table, row)
+                    found = True
+                    break
+
+            if not found:
+                console = Console()
+                console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
+                return
     elif top:
         # Get the top characters by current DKP
         top_rows = df.nlargest(top, 'points_current')
@@ -62,4 +76,3 @@ def add_row_to_table(table, row):
 
     # Add a row to the Rich table
     table.add_row(main_id, main_character, alt_names, current_points)
-
