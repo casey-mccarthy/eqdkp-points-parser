@@ -3,6 +3,12 @@
 
 This project is a DKP (Dragon Kill Points) parser that processes XML files containing player and point information for an online game. It aggregates and associates characters based on their main and alt designations, fetching data from an API, and outputs this information in a clean and structured way using an interactive CLI.
 
+## Example Output
+
+Here’s an example of the console output:
+
+![Output](readme/run_example.png)
+
 ## Features
 
 - **Main and Alt Character Processing**: Identifies and separates main characters from their alts, ensuring alts are only processed after all mains have been identified.
@@ -87,14 +93,6 @@ The output data model is as follows:
 ## Logging
 
 Logs are stored in a file named `main_script.log` in the project directory. The log captures all key steps and associations during processing, as well as user commands and errors.
-
-## Example Output
-
-Here’s an example of the console output:
-
-![Output](readme/run_example.png)
-
-
 
 
 ## Project Structure
