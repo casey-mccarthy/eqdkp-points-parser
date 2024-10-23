@@ -88,6 +88,4 @@ def parse_dkp(xml_file):
     # Log the completion of the task
     logging.info("Aggregated DKP Points Table created and exported to CSV.")
 
-# Parse the XML file and generate the table
-xml_file = "response.xml"  # Update with the path to your XML file
-parse_dkp(xml_file)
+

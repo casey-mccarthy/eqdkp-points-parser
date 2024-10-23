@@ -64,5 +64,3 @@ def fetch_points_data(output_file):
 # Output file path
 output_file = "response.xml"
 
-# Fetch and save the points data
-fetch_points_data(output_file)

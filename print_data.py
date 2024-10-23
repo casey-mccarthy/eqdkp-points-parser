@@ -63,17 +63,3 @@ def add_row_to_table(table, row):
     # Add a row to the Rich table
     table.add_row(main_id, main_character, alt_names, current_points)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Display DKP Data")
-    parser.add_argument("mode", choices=["top", "character", "random"], help="Mode of displaying data")
-    parser.add_argument("value", help="Character name, top number, or random count")
-    args = parser.parse_args()
-
-    csv_file = "aggregated_dkp_points_with_separation.csv"  # Path to your CSV file
-
-    if args.mode == "character":
-        print_data(csv_file, character_name=args.value)
-    elif args.mode == "top":
-        print_data(csv_file, top=int(args.value))
-    elif args.mode == "random":
-        print_data(csv_file, random_count=int(args.value))
