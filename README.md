@@ -90,20 +90,11 @@ Logs are stored in a file named `main_script.log` in the project directory. The 
 
 ## Example Output
 
-Here’s an example of the CSV output and the printed table:
+Here’s an example of the console output:
 
-| ID  | Main Character | Alts                   | Points Earned | Points Spent | Points Adjusted | Points Current |
-|-----|----------------|------------------------|---------------|--------------|-----------------|----------------|
-| 56  | Dainae         | Berik, Byee, Cneasaigh | 3213          | 3543         | 520             | 190            |
+![Output](readme/run_example.png)
 
-```
-+----+----------------+-------------------------------+----------------+
-| ID | Main Character | Alts                          | Current Points |
-+----+----------------+-------------------------------+----------------+
-| 56 | Dainae         | Berik, Byee, Cneasaigh        | 190            |
-| 78 | Avalansh       | Brogade, Vehho                | 114            |
-| ...| ...            | ...                           | ...            |
-+----+----------------+-------------------------------+----------------+
+
 ```
 
 ## Project Structure
