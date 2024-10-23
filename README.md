@@ -95,10 +95,9 @@ Here’s an example of the console output:
 ![Output](readme/run_example.png)
 
 
-```
+
 
 ## Project Structure
-
 ```
 /project-directory
 │
@@ -113,7 +112,7 @@ Here’s an example of the console output:
 ```
 
 ## Requirements
-
+```
 - **Python 3.x**
 - **pandas** library
 - **prettytable** library
@@ -121,6 +120,7 @@ Here’s an example of the console output:
 - **requests** library
 - **dotenv** library
 - **pyfiglet** library
+```
 
 ## Author
 
