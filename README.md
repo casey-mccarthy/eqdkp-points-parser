@@ -98,7 +98,7 @@ Here’s an example of the console output:
 
 
 ## Project Structure
-```
+
 /project-directory
 │
 ├── fetch_points.py          # Script for fetching points data from API
@@ -109,10 +109,10 @@ Here’s an example of the console output:
 ├── requirements.txt         # Python dependencies
 ├── main_script.log          # Log file capturing all processing steps
 └── README.md                # Project documentation
-```
+
 
 ## Requirements
-```
+
 - **Python 3.x**
 - **pandas** library
 - **prettytable** library
@@ -120,7 +120,7 @@ Here’s an example of the console output:
 - **requests** library
 - **dotenv** library
 - **pyfiglet** library
-```
+
 
 ## Author
 
