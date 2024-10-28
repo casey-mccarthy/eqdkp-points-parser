@@ -1,18 +1,8 @@
 import xml.etree.ElementTree as ET
 import pandas as pd
-import logging
 
-def setup_logging():
-    # Configure logging settings
-    logging.basicConfig(
-        filename='dkp_parser.log',
-        filemode='w',  # Overwrites the file on each run
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        level=logging.DEBUG
-    )
 
 def parse_dkp(xml_file):
-    setup_logging()
 
     # Parse the XML file
     tree = ET.parse(xml_file)
@@ -54,7 +44,6 @@ def parse_dkp(xml_file):
                 logging.info(f"Main character added: {main_name} (ID: {main_id})")
 
     # Second Pass: Process all alt characters and associate them with their main characters
-    logging.info("Processing all alt characters...")
     for player in players.findall("player"):
         main_name = player.find("main_name").text
         char_id = int(player.find("id").text)
