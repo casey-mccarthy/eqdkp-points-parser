@@ -3,7 +3,10 @@ import random
 from rich.table import Table
 from rich.console import Console
 
+from main import LOGGER
+
 def print_data(csv_file, character_name=None, top=None, random_count=None):
+    LOGGER.info(f"Reading CSV file: {csv_file}")
     # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_file)
 
@@ -17,6 +20,7 @@ def print_data(csv_file, character_name=None, top=None, random_count=None):
     table.add_column("Current Points", justify="right", style="red")
 
     if character_name:
+        LOGGER.info(f"Searching for character: {character_name}")
         # Normalize character name for comparison
         character_name_lower = character_name.lower()
 
@@ -24,35 +28,42 @@ def print_data(csv_file, character_name=None, top=None, random_count=None):
         filtered_row = df[df['main_character'].str.lower() == character_name_lower]
         
         if not filtered_row.empty:
+            LOGGER.info(f"Character '{character_name}' found as main character.")
             # Found a match in main characters
             row = filtered_row.iloc[0]
             add_row_to_table(table, row)
         else:
+            LOGGER.info(f"Character '{character_name}' not found as main character. Checking alts.")
             # Check if the character is an alt
             found = False
             for _, row in df.iterrows():
                 alts = eval(row['alts'])  # Converts the string back to a list of tuples
                 if any(alt_name.lower() == character_name_lower for _, alt_name in alts):
+                    LOGGER.info(f"Character '{character_name}' found as alt.")
                     add_row_to_table(table, row)
                     found = True
                     break
 
             if not found:
+                LOGGER.warning(f"Character '{character_name}' not found!")
                 console = Console()
                 console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
                 return
     elif top:
+        LOGGER.info(f"Selecting top {top} characters by current DKP.")
         # Get the top characters by current DKP
         top_rows = df.nlargest(top, 'points_current')
         for _, row in top_rows.iterrows():
             add_row_to_table(table, row)
     elif random_count:
+        LOGGER.info(f"Selecting {random_count} random characters.")
         # Select random rows
         random_indices = random.sample(range(len(df)), random_count)
         selected_rows = df.iloc[random_indices]
         for _, row in selected_rows.iterrows():
             add_row_to_table(table, row)
     else:
+        LOGGER.info("Selecting 5 random characters by default.")
         # Default: Select 5 random rows from the CSV
         random_indices = random.sample(range(len(df)), 5)
         selected_rows = df.iloc[random_indices]
@@ -62,6 +73,7 @@ def print_data(csv_file, character_name=None, top=None, random_count=None):
     # Create a console and print the table
     console = Console()
     console.print(table)
+    LOGGER.info("Table printed successfully.")
 
 def add_row_to_table(table, row):
     """Helper function to add a row to the Rich table."""
@@ -76,3 +88,4 @@ def add_row_to_table(table, row):
 
     # Add a row to the Rich table
     table.add_row(main_id, main_character, alt_names, current_points)
+    LOGGER.debug(f"Added row to table: ID={main_id}, Main Character={main_character}, Alts={alt_names}, Current Points={current_points}")

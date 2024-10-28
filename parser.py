@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 import pandas as pd
 
+from main import LOGGER
+
 
 def parse_dkp(xml_file):
 
@@ -15,7 +17,7 @@ def parse_dkp(xml_file):
     main_character_data = {}
 
     # First Pass: Process and store all main characters
-    logging.info("Processing all main characters first...")
+    LOGGER.info("Processing all main characters first...")
     for player in players.findall("player"):
         main_id = int(player.find("main_id").text)
         main_name = player.find("main_name").text
@@ -41,7 +43,7 @@ def parse_dkp(xml_file):
                         "adjusted": adjustment_with_twink
                     }
                 }
-                logging.info(f"Main character added: {main_name} (ID: {main_id})")
+                LOGGER.info(f"Main character added: {main_name} (ID: {main_id})")
 
     # Second Pass: Process all alt characters and associate them with their main characters
     for player in players.findall("player"):
@@ -51,9 +53,9 @@ def parse_dkp(xml_file):
 
         if main_name in main_character_data and main_name != name:  # Alt character association
             main_character_data[main_name]["alts"].append((char_id, name))
-            logging.info(f"Alt '{name}' (ID: {char_id}) associated with main '{main_name}'")
+            LOGGER.info(f"Alt '{name}' (ID: {char_id}) associated with main '{main_name}'")
         elif main_name not in main_character_data:
-            logging.warning(f"Main character '{main_name}' not found for alt '{name}' (ID: {char_id})")
+            LOGGER.warning(f"Main character '{main_name}' not found for alt '{name}' (ID: {char_id})")
 
     # Prepare the final data structure for export and display
     final_data = []
@@ -75,6 +77,6 @@ def parse_dkp(xml_file):
     df.to_csv("aggregated_dkp_points_with_separation.csv", index=False)
     
     # Log the completion of the task
-    logging.info("Aggregated DKP Points Table created and exported to CSV.")
+    LOGGER.info("Aggregated DKP Points Table created and exported to CSV.")
 
 
