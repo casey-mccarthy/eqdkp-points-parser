@@ -1,31 +1,27 @@
 import requests
 import os
-import logging
 from dotenv import load_dotenv
+
 from rich.progress import Progress
 from rich.console import Console
+
+
+from main import LOGGER
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Setup logging
-logging.basicConfig(
-    filename='fetch_points.log',
-    filemode='w',  # Overwrites the file on each run
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-
+# Load environment variables from .env file
 def fetch_points_data(output_file):
     console = Console()
-    logging.info("Starting fetch_points_data function...")
+    LOGGER.info("Starting fetch_points_data function...")
 
     # Retrieve the API token from environment variables
     api_token = os.getenv('API_KEY_CORE_READ')
     if not api_token:
         error_message = "Error: API key not found in environment variables."
         console.print(f"[bold red]{error_message}[/bold red]")
-        logging.error(error_message)
+        LOGGER.error(error_message)
         return
 
     # Define the API URL with query parameters
@@ -50,16 +46,16 @@ def fetch_points_data(output_file):
                 file.write(response.text)
             success_message = f"Data successfully saved to {output_file}"
             console.print(f"[bold green]{success_message}[/bold green]")
-            logging.info(success_message)
+            LOGGER.info(success_message)
         else:
             error_message = f"Failed to fetch data. Status code: {response.status_code}, Response: {response.text}"
             console.print(f"[bold red]{error_message}[/bold red]")
-            logging.error(error_message)
+            LOGGER.error(error_message)
 
     except Exception as e:
         error_message = f"An error occurred: {e}"
         console.print(f"[bold red]{error_message}[/bold red]")
-        logging.error(error_message)
+        LOGGER.error(error_message)
 
 # Output file path
 output_file = "response.xml"
