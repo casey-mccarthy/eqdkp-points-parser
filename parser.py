@@ -17,6 +17,27 @@ def parse_dkp(xml_file: str) -> None:
 
     Returns:
         None
+
+    Example Output:
+        The function generates a CSV file with the following structure:
+        - id: Main character's ID (integer)
+        - main_character: Main character's name (string)
+        - alts: List of tuples containing (ID, name) for each alt associated with the main character
+        - points_earned: Total points earned
+        - points_spent: Total points spent
+        - points_adjusted: Total points adjusted
+        - points_current: Current points
+
+        Example row in CSV:
+        {
+            "id": 3547,
+            "main_character": "Aacam",
+            "alts": "[(4397, 'Aaeuvien'), (4010, 'Aafdular')]",
+            "points_earned": 1000,
+            "points_spent": 500,
+            "points_adjusted": 50,
+            "points_current": 550
+        }
     """
     # Parse the XML file
     tree = ET.parse(xml_file)
