@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from rich.progress import Progress
 from rich.console import Console
 
+from api_refs import APIReadPaths, call_api
+
 
 from main import LOGGER
 

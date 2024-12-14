@@ -27,9 +27,9 @@ def get_logger(name: str, level=logging.INFO) -> logging.Logger:
     )
     
     # Create a console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    #console_handler = logging.StreamHandler()
+    #console_handler.setFormatter(formatter)
+    #logger.addHandler(console_handler)
     
     # Create a file handler (rotates every day and keeps 7 backups)
     log_directory = "logs"
