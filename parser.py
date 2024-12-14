@@ -4,8 +4,20 @@ import pandas as pd
 from main import LOGGER
 
 
-def parse_dkp(xml_file):
+def parse_dkp(xml_file: str) -> None:
+    """
+    Parses a DKP XML file and exports the data to a CSV file.
 
+    This function processes an XML file containing player data, identifies main characters,
+    associates alt characters with their respective main characters, and exports the aggregated
+    data to a CSV file.
+
+    Args:
+        xml_file (str): The path to the XML file to be parsed.
+
+    Returns:
+        None
+    """
     # Parse the XML file
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -14,7 +26,7 @@ def parse_dkp(xml_file):
     players = root.find("players")
 
     # Dictionary to store main characters and their associated data
-    main_character_data = {}
+    main_character_data: dict[str, dict] = {}
 
     # First Pass: Process and store all main characters
     LOGGER.info("Processing all main characters first...")
