@@ -4,3 +4,6 @@ response.xml
 *.log
 aggregated_dkp_points_with_separation.zip
 *.pyc
+logs/dkp_log.log.2024-10-28
+logs/dkp_log.log.2024-11-30
+debug_parsed_data.json
