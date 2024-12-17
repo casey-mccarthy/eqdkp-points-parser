@@ -30,24 +30,15 @@ jobs:
           skip-on-empty: true
           tag-prefix: 'v'
 
-      # Step 3: Debug all changelog outputs
-      - name: Debug Changelog Outputs
-        run: |
-          echo "Version: ${{ steps.changelog.outputs.version }}"
-          echo "Tag: ${{ steps.changelog.outputs.tag }}"
-          echo "Skipped: ${{ steps.changelog.outputs.skipped }}"
-          echo "Clean Changelog: ${{ steps.changelog.outputs.clean_changelog }}"
-          echo "Changelog: ${{ steps.changelog.outputs.changelog }}"
-
-      # Step 4: Create a new GitHub release
+      # Step 3: Create a new GitHub release
       - name: Create Release
-        if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}  # Only run if not skipped
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ steps.changelog.outputs.newVersion }}  # Uses the tag created in the previous step
-          release_name: Release v${{ steps.changelog.outputs.newVersion }}  # Uses the new version as the release name
-          body_path: CHANGELOG.md  # Uses the changelog file as the release notes
-          draft: false  # Create a full release (not a draft)
-          prerelease: false  # This is a stable release
+          tag_name: ${{ steps.changelog.outputs.tag }}  # Use the tag output directly
+          release_name: Release ${{ steps.changelog.outputs.tag }}  # Use the tag output for release name
+          body: ${{ steps.changelog.outputs.clean_changelog }}  # Use clean_changelog for release notes
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
