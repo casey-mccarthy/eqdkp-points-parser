@@ -2,38 +2,55 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*.*.*'  # Triggers when semantic version tags are pushed
+    branches:
+      - main  # Automatically trigger on push to the 'main' branch
 
 permissions:
-  contents: write  # Required for GitHub to push changes and create releases
+  contents: write  # Required for GitHub to push changes, create tags, and release versions
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repo
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Conventional Changelog Action
+      # Step 2: Generate Changelog and Determine New Version
+      - name: Generate Changelog and Bump Version
+        id: changelog
         uses: TriPSs/conventional-changelog-action@v6.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Corrected token usage
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          preset: angular  # Optional: use 'angular' for the changelog style
-          outputFile: CHANGELOG.md  # Generates a changelog file
-          versionFile: ./package.json  # Optional: bumps the version in package.json
-          versionPath: version  # Optional: updates the version field in package.json
+          preset: angular  # Uses 'angular' style commits (feat, fix, etc.)
+          outputFile: CHANGELOG.md  # Write changelog to this file
+          versionFile: ./package.json  # Bumps version in package.json (optional)
+          versionPath: version  # Changes the version field in package.json
+          skipEmptyRelease: true  # Skips the release if no changes exist
+          tagPrefix: 'v'  # Uses v1.0.0 as the versioning format
 
+      # Step 3: Commit the new version bump and changelog
+      - name: Commit and Push Changes
+        if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "chore(release): v${{ steps.changelog.outputs.newVersion }} [skip ci]"
+          git tag -a v${{ steps.changelog.outputs.newVersion }} -m "chore(release): v${{ steps.changelog.outputs.newVersion }}"
+          git push origin main --follow-tags
+
+      # Step 4: Create a new GitHub release
       - name: Create Release
+        if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.ref_name }}  # Uses the pushed tag as the release tag
-          release_name: Release ${{ github.ref_name }}  # Automatically names the release based on the tag
-          body_path: CHANGELOG.md  # Uses the CHANGELOG.md as the release notes
-          draft: false  # Not a draft release
-          prerelease: false  # Not a prerelease
+          tag_name: v${{ steps.changelog.outputs.newVersion }}  # Uses the tag created in the previous step
+          release_name: Release v${{ steps.changelog.outputs.newVersion }}  # Uses the new version as the release name
+          body_path: CHANGELOG.md  # Uses the changelog file as the release notes
+          draft: false  # Create a full release (not a draft)
+          prerelease: false  # This is a stable release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Corrected token usage
-          #
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
