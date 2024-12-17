@@ -52,3 +52,28 @@ class DataFetcher:
             logger.error(error_msg)
             self.console.print(f"[bold red]{error_msg}[/bold red]")
             return None
+
+    def debug_response(self, response: requests.Response, file_path: str) -> None:
+        """
+        Debug helper to validate API response and saved XML file.
+        
+        Args:
+            response: The API response object
+            file_path: Path where XML file is saved
+        """
+        # Check API Response
+        logger.debug(f"Response status code: {response.status_code}")
+        logger.debug(f"Response headers: {response.headers}")
+        logger.debug(f"First 200 characters of response: {response.text[:200]}")
+        
+        # Check saved file
+        try:
+            with open(file_path, 'r') as f:
+                content = f.read()
+                logger.debug(f"Saved file exists: True")
+                logger.debug(f"File size: {len(content)} bytes")
+                logger.debug(f"First 200 characters of file: {content[:200]}")
+        except FileNotFoundError:
+            logger.error(f"File not found: {file_path}")
+        except Exception as e:
+            logger.error(f"Error reading file: {e}")

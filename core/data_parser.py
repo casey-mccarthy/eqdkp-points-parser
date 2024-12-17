@@ -1,34 +1,66 @@
 from typing import Dict, List, Tuple, Any
 import xml.etree.ElementTree as ET
 from utils.logger import get_logger
+import logging
 
 logger = get_logger(__name__)
 
 class DataParser:
     """Handles parsing of XML data from EQDKP."""
     
-    def parse_xml(self, xml_file: str) -> Dict[str, Any]:
+    def parse_xml(self, file_path: str) -> Any:
         """
-        Parse the XML file containing DKP data.
+        Parse XML file with detailed error checking.
         
         Args:
-            xml_file: Path to the XML file to parse
-            
+            file_path: Path to the XML file
+        
         Returns:
-            Dict containing parsed character data
+            Parsed data structure
+        
+        Raises:
+            ValueError: If XML parsing fails
         """
-        logger.info(f"Parsing XML file: {xml_file}")
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-        players = root.find("players")
+        try:
+            tree = ET.parse(file_path)
+            root = tree.getroot()
+            
+            self._debug_xml_structure(root)
+            self._validate_required_sections(root)
+            
+            return self._parse_data(root)
+            
+        except ET.ParseError as e:
+            raise ValueError(f"Invalid XML format: {e}")
+        except Exception as e:
+            logging.exception("Error during XML parsing")
+            raise ValueError(f"Error parsing XML: {e}")
+
+    def _debug_xml_structure(self, root: ET.Element) -> None:
+        """Log debug information about XML structure."""
+        logging.debug(f"XML root tag: {root.tag}")
+        logging.debug(f"Direct children of root: {[child.tag for child in root]}")
         
-        # First pass: Process main characters
-        main_character_data = self._process_main_characters(players)
-        
-        # Second pass: Process alts
-        self._process_alt_characters(players, main_character_data)
-        
-        return self._prepare_final_data(main_character_data)
+        if players := root.find('players'):
+            logging.debug(f"Number of players found: {len(list(players))}")
+            if first_player := players.find('player'):
+                logging.debug(f"First player elements: {[elem.tag for elem in first_player]}")
+            else:
+                logging.warning("No player elements found")
+
+    def _validate_required_sections(self, root: ET.Element) -> None:
+        """Validate presence of required XML sections."""
+        for section in ['eqdkp', 'players']:
+            if root.find(section) is None:
+                raise ValueError(f"Missing required '{section}' section")
+
+    def _parse_data(self, root: ET.Element) -> Any:
+        """
+        Internal method to parse the XML data structure.
+        Add logging before any .text access to identify which element is None.
+        """
+        # Add your existing parsing logic here with debug statements
+        pass
 
     def _process_main_characters(self, players: ET.Element) -> Dict[str, Any]:
         """Process and extract main character data from XML."""
