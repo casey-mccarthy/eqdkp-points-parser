@@ -2,7 +2,7 @@
 
 import unittest
 from unittest.mock import patch
-from api_refs import get_user_chars, get_calendar_events_list, get_calendar_event_details, get_points, search_user, search_character, get_me
+from core.api_refs import get_user_chars, get_calendar_events_list, get_calendar_event_details, get_points, search_user, search_character, get_me
 
 class TestAPIReadPaths(unittest.TestCase):
 
