@@ -68,9 +68,7 @@ class CLI:
         self._command_loop()
 
     def _display_welcome(self) -> None:
-        """Display welcome message and ASCII art."""
-        ascii_art = pyfiglet.figlet_format("EQDKP Parser", font="slant")
-        self.console.print(f"[bold cyan]{ascii_art}[/bold cyan]")
+        """Display welcome message and command help."""
         self.console.print("[cyan]Data fetched and processed successfully![/cyan]")
         self._handle_help()
 
