@@ -26,7 +26,7 @@ jobs:
           preset: angular
           output-file: CHANGELOG.md
           version-file: pyproject.toml
-          version-path: tool.uv.version
+          version-path: project.version
           skip-on-empty: true
           tag-prefix: 'v'
 
