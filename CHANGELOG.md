@@ -1,3 +1,12 @@
+## [1.0.1](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.1.1...v1.0.1) (2024-12-17)
+
+
+### Bug Fixes
+
+* sync the pyproject and package.json ([01e0a23](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/01e0a23fd2a2a066292800ab97af688456a76b27))
+
+
+
 ## [0.1.1](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.1.0...v0.1.1) (2024-12-17)
 
 
