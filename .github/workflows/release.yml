@@ -32,11 +32,12 @@ jobs:
           tagPrefix: 'v'  # Uses v1.0.0 as the versioning format
 
       # Step 3: Commit the new version bump and changelog
+      # us logged in user for user.name and user.email
       - name: Commit and Push Changes
         if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name ${{ github.actor }}
+          git config user.email ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
           git add .
           git commit -m "chore(release): v${{ steps.changelog.outputs.newVersion }} [skip ci]"
           git tag -a v${{ steps.changelog.outputs.newVersion }} -m "chore(release): v${{ steps.changelog.outputs.newVersion }}"
