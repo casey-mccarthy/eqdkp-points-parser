@@ -30,11 +30,6 @@ jobs:
           skip-on-empty: true
           tag-prefix: 'v'
 
-      - name: Debug Changelog Output
-        run: |
-          echo "New Version: ${{ steps.changelog.outputs.version }}"
-
-
       # Step 4: Create a new GitHub release
       - name: Create Release
         if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
