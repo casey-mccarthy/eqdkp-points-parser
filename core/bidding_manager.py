@@ -36,7 +36,10 @@ class BiddingManager:
 
         character = self.character_data[self.character_data['main_character'].str.lower() == character_name.lower()]
         if not character.empty:
-            self.current_bid.append(character.iloc[0])
+            character_info = character.iloc[0]
+            # Insert character in sorted order based on points
+            self.current_bid.append(character_info)
+            self.current_bid.sort(key=lambda x: x['points_current'], reverse=True)
             self.console.print(f"[cyan]Added {character_name} to the bid.[/cyan]")
             self.display_sorted_bid()
         else:
@@ -44,12 +47,11 @@ class BiddingManager:
 
     def display_sorted_bid(self) -> None:
         """Display the current bid participants sorted by points."""
-        sorted_bid = sorted(self.current_bid, key=lambda x: x['points_current'], reverse=True)
         table = Table(title="Current Bid Participants")
         table.add_column("Main Character", style="magenta")
         table.add_column("Current Points", justify="right", style="red")
 
-        for index, char in enumerate(sorted_bid):
+        for index, char in enumerate(self.current_bid):
             style = "green" if index == 0 else None  # Highlight the top character in green
             table.add_row(char['main_character'], str(char['points_current']), style=style)
 
