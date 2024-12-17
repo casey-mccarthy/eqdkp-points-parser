@@ -83,7 +83,10 @@ class CLI:
         while True:
             try:
                 # Show available commands on each loop in yellow
-                self.console.print("\n[yellow dim]Available commands: character/c, top/t, help/h, exit/e[/yellow dim]")
+                self.console.print("\n[yellow]Options: character <name> or c <name>, "
+                                 "top <number> or t <number>, "
+                                 "help or h, "
+                                 "exit or e[/yellow]")
                 
                 user_input = Prompt.ask("\nEnter command").lower().split()
                 if not user_input:
