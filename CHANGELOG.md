@@ -1,4 +1,14 @@
-# 0.1.0 (2024-12-17)
+## [0.1.1](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.1.0...v0.1.1) (2024-12-17)
+
+
+### Bug Fixes
+
+* debug ([ffd6749](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/ffd6749a51ff4fe2da2546933b94d11f57990109))
+* test release ([f5cad7a](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/f5cad7a83d057bb30da5f9f460587319bccb498b))
+
+
+
+# [0.1.0](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/5eb311c387d1a642b08d3fde0402e4d45d2c9e59...v0.1.0) (2024-12-17)
 
 
 ### Bug Fixes
