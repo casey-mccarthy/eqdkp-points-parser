@@ -1,8 +1,9 @@
 [project]
 name = "eqdkp_parser"
-version = "1.0.1"
+version = "0.0.1"
 description = "EQDKP DKP points parser and analyzer"
 readme = "README.md"
+changelog = "CHANGELOG.md"
 requires-python = ">=3.9"
 dependencies = [
   "pandas>=2.2.3",
@@ -52,5 +53,3 @@ multi_line_output = 3
 [tool.hatch.build.targets.wheel]
 packages = [ "src/eqdkp_parser" ]
 
-[tool.uv]
-version = "0.2.1"
