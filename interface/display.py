@@ -55,24 +55,40 @@ class DisplayManager:
         return table
 
     def _display_character(self, data: pd.DataFrame, character_name: str, table: Table) -> None:
-        """Display data for a specific character."""
-        character_name_lower = character_name.lower()
-        filtered_row = data[data['main_character'].str.lower() == character_name_lower]
+        """
+        Display data for a specific character.
         
-        if not filtered_row.empty:
-            self._add_row_to_table(table, filtered_row.iloc[0])
-            logger.info(f"Displayed data for main character: {character_name}")
-        else:
-            # Check alts
-            for _, row in data.iterrows():
-                alts = eval(row['alts'])
-                if any(alt_name.lower() == character_name_lower for _, alt_name in alts):
+        Args:
+            data: DataFrame containing character data
+            character_name: Name of character to search for
+            table: Rich table for display
+        """
+        try:
+            character_name_lower = character_name.lower()
+            
+            # First try exact match on main character
+            main_char_match = data[data['main_character'].str.lower() == character_name_lower]
+            
+            if not main_char_match.empty:
+                self._add_row_to_table(table, main_char_match.iloc[0])
+                logger.info(f"Found main character: {character_name}")
+                return
+            
+            # Then check alts
+            for idx, row in data.iterrows():
+                alt_list = row['alts'].split(', ') if row['alts'] else []
+                if any(alt.lower() == character_name_lower for alt in alt_list):
                     self._add_row_to_table(table, row)
-                    logger.info(f"Displayed data for alt character: {character_name}")
+                    logger.info(f"Found character as alt: {character_name}")
                     return
             
+            # If we get here, no character was found
             logger.warning(f"Character not found: {character_name}")
             self.console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
+            
+        except Exception as e:
+            logger.error(f"Error displaying character data: {e}")
+            self.console.print(f"[bold red]Error displaying character data: {e}[/bold red]")
 
     def _display_top(self, data: pd.DataFrame, count: int, table: Table) -> None:
         """Display top N characters by current DKP."""
@@ -91,12 +107,9 @@ class DisplayManager:
 
     def _add_row_to_table(self, table: Table, row: pd.Series) -> None:
         """Add a row of data to the table."""
-        alts = eval(row['alts'])
-        alt_names = ", ".join(alt_name for _, alt_name in alts)
-        
         table.add_row(
             str(row['id']),
             row['main_character'],
-            alt_names,
+            row['alts'] if row['alts'] else 'None',  # Handle empty alt strings
             str(row['points_current'])
         )

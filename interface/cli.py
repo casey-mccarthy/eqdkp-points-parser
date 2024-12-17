@@ -9,6 +9,7 @@ from rich.prompt import Prompt, IntPrompt
 import pyfiglet
 from interface.display import DisplayManager
 from utils.logger import get_logger
+import pandas as pd
 
 logger = get_logger(__name__)
 
@@ -21,9 +22,15 @@ class Command:
 class CLI:
     """Handles command-line interface operations."""
     
-    def __init__(self) -> None:
-        """Initialize the CLI interface."""
+    def __init__(self, data: Optional[pd.DataFrame] = None) -> None:
+        """
+        Initialize the CLI interface.
+        
+        Args:
+            data: DataFrame containing the processed DKP data
+        """
         self.console = Console()
+        self.data = data
         self.display = DisplayManager()
         self.commands = self._setup_commands()
 
@@ -86,18 +93,36 @@ class CLI:
     # Command handlers
     def _handle_character_search(self) -> None:
         """Handle character search command."""
+        if self.data is None:
+            self.console.print("[bold red]No data available![/bold red]")
+            return
+        
         character = Prompt.ask("Enter character name")
-        self.display.display_data(character_name=character)
+        logger.debug(f"Searching for character: {character}")
+        logger.debug(f"Available columns: {self.data.columns.tolist()}")
+        logger.debug(f"Data sample: {self.data.head(1).to_dict('records')}")
+        
+        try:
+            self.display.display_data(self.data, character_name=character)
+        except Exception as e:
+            logger.error(f"Error searching for character: {e}")
+            self.console.print(f"[bold red]Error searching for character: {e}[/bold red]")
 
     def _handle_top_display(self) -> None:
         """Handle top N display command."""
+        if self.data is None:
+            self.console.print("[bold red]No data available![/bold red]")
+            return
         count = IntPrompt.ask("Enter number of characters to show", default=5)
-        self.display.display_data(top=count)
+        self.display.display_data(self.data, top=count)
 
     def _handle_random_display(self) -> None:
         """Handle random display command."""
+        if self.data is None:
+            self.console.print("[bold red]No data available![/bold red]")
+            return
         count = IntPrompt.ask("Enter number of random characters to show", default=5)
-        self.display.display_data(random_count=count)
+        self.display.display_data(self.data, random_count=count)
 
     def _handle_help(self) -> None:
         """Display help information."""

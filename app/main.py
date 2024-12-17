@@ -10,6 +10,7 @@ from core.data_parser import DataParser
 from core.data_processor import DataProcessor
 from interface.cli import CLI
 from utils.logger import get_logger
+import pandas as pd
 
 logger = get_logger(__name__)
 
@@ -19,10 +20,10 @@ class EQDKPParserApp:
     def __init__(self) -> None:
         """Initialize application components and configuration."""
         self.config = AppConfig.load()
-        self.cli = CLI()
         self.data_fetcher = DataFetcher()
         self.data_parser = DataParser()
         self.data_processor = DataProcessor()
+        self.cli = None  # Initialize CLI after data processing
         
         logger.info("Application initialized")
 
@@ -38,16 +39,16 @@ class EQDKPParserApp:
         """
         try:
             self._validate_config()
-            self._fetch_and_process_data()
+            processed_data = self._fetch_and_process_data()
+            self.cli = CLI(processed_data)
             self.cli.start()
-            
-        except KeyboardInterrupt:
-            logger.info("Application terminated by user")
-            sys.exit(0)
             
         except Exception as e:
             logger.error(f"Application error: {e}")
-            self.cli.console.print(f"[bold red]Fatal error: {e}[/bold red]")
+            if self.cli:
+                self.cli.console.print(f"[bold red]Fatal error: {e}[/bold red]")
+            else:
+                print(f"Fatal error: {e}")
             sys.exit(1)
 
     def _validate_config(self) -> None:
@@ -56,30 +57,44 @@ class EQDKPParserApp:
             raise ValueError("API key not found in environment variables")
         logger.info("Configuration validated")
 
-    def _fetch_and_process_data(self) -> None:
-        """Fetch, parse, and process the DKP data."""
-        # Fetch XML data
-        xml_file = self.data_fetcher.fetch_data(
-            self.config.api_key,
-            self.config.xml_output_file
-        )
-        if not xml_file:
-            raise RuntimeError("Failed to fetch data from API")
+    def _fetch_and_process_data(self) -> pd.DataFrame:
+        """
+        Fetch, parse, and process the DKP data.
+        
+        Returns:
+            pd.DataFrame: Processed data frame
+        
+        Raises:
+            RuntimeError: If any step in the data pipeline fails
+        """
+        try:
+            # Fetch XML data
+            xml_file = self.data_fetcher.fetch_data(
+                self.config.api_key,
+                self.config.xml_output_file
+            )
+            if not xml_file:
+                raise RuntimeError("Failed to fetch data from API")
 
-        # Parse XML data
-        parsed_data = self.data_parser.parse_xml(xml_file)
-        if not parsed_data:
-            raise RuntimeError("Failed to parse XML data")
+            # Parse XML data
+            parsed_data = self.data_parser.parse_xml(xml_file)
+            if not parsed_data:
+                raise RuntimeError("Failed to parse XML data")
 
-        # Process data
-        processed_data = self.data_processor.process_data(
-            parsed_data,
-            self.config.csv_output_file
-        )
-        if processed_data.empty:
-            raise RuntimeError("No data processed")
+            # Process data
+            processed_data = self.data_processor.process_data(
+                parsed_data,
+                self.config.csv_output_file
+            )
+            if processed_data.empty:
+                raise RuntimeError("No data processed")
 
-        logger.info("Data fetching and processing completed successfully")
+            logger.info("Data fetching and processing completed successfully")
+            return processed_data
+
+        except Exception as e:
+            logger.error(f"Data pipeline error: {str(e)}")
+            raise RuntimeError(f"Data pipeline failed: {str(e)}")
 
 def main() -> None:
     """Application entry point."""
