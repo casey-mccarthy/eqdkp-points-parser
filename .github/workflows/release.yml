@@ -27,9 +27,11 @@ jobs:
       - name: Create Release
         uses: actions/create-release@v1
         with:
-          github-token: ${{ secrets.CHANGELOG_RELEASE }}
+
           tag_name: ${{ github.event.release.tag_name }}
           release_name: ${{ github.event.release.name }}
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.CHANGELOG_RELEASE }}
 
