@@ -52,5 +52,5 @@ multi_line_output = 3
 [tool.hatch.build.targets.wheel]
 packages = [ "src/eqdkp_parser" ]
 
-[tool.poetry]
+[tool.uv]
 version = "0.2.0"
