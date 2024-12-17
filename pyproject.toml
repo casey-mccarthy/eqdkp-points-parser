@@ -4,33 +4,37 @@ version = "1.0.0"
 description = "EQDKP DKP points parser and analyzer"
 readme = "README.md"
 requires-python = ">=3.9"
-authors = [
-    { name = "Casey McCarthy", email = "casey@caseymccarthy.com" }
-]
 dependencies = [
-    "pandas>=2.2.3",
-    "requests>=2.32.3",
-    "python-dotenv>=1.0.1",
-    "rich>=13.9.3",
-    "pyfiglet>=1.0.2",
-    "coverage>=7.6.9",
+  "pandas>=2.2.3",
+  "requests>=2.32.3",
+  "python-dotenv>=1.0.1",
+  "rich>=13.9.3",
+  "pyfiglet>=1.0.2",
+  "coverage>=7.6.9"
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "black>=24.0.0",
-    "mypy>=1.8.0",
-    "isort>=5.13.0",
+  [[project.authors]]
+  name = "Casey McCarthy"
+  email = "casey@caseymccarthy.com"
+
+  [project.optional-dependencies]
+  dev = [
+  "pytest>=7.0.0",
+  "black>=24.0.0",
+  "mypy>=1.8.0",
+  "isort>=5.13.0"
 ]
+
+  [project.scripts]
+  eqdkp-parser = "eqdkp_parser.app.main:main"
 
 [build-system]
-requires = ["hatchling"]
+requires = [ "hatchling" ]
 build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
+testpaths = [ "tests" ]
+python_files = [ "test_*.py" ]
 
 [tool.mypy]
 python_version = "3.9"
@@ -39,14 +43,14 @@ ignore_missing_imports = true
 
 [tool.black]
 line-length = 88
-target-version = ['py39']
+target-version = [ "py39" ]
 
 [tool.isort]
 profile = "black"
 multi_line_output = 3
 
-[project.scripts]
-eqdkp-parser = "eqdkp_parser.app.main:main"
-
 [tool.hatch.build.targets.wheel]
-packages = ["src/eqdkp_parser"]
+packages = [ "src/eqdkp_parser" ]
+
+[tool.poetry]
+version = "0.1.0"
