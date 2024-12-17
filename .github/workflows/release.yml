@@ -31,7 +31,14 @@ jobs:
           skipEmptyRelease: true  # Skips the release if no changes exist
           tagPrefix: 'v'  # Uses v1.0.0 as the versioning format
 
-      # Step 3: Commit the new version bump and changelog
+      # Step 3: Update pyproject.toml version
+      - name: Update pyproject.toml version
+        if: steps.changelog.outputs.newVersion != ''
+        run: |
+          NEW_VERSION=$(jq -r '.version' package.json)
+          sed -i "s/^version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
+
+      # Step 4: Commit the new version bump and changelog
       # us logged in user for user.name and user.email
       - name: Commit and Push Changes
         if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
@@ -43,7 +50,7 @@ jobs:
           git tag -a v${{ steps.changelog.outputs.newVersion }} -m "chore(release): v${{ steps.changelog.outputs.newVersion }}"
           git push origin main --follow-tags
 
-      # Step 4: Create a new GitHub release
+      # Step 5: Create a new GitHub release
       - name: Create Release
         if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
         uses: actions/create-release@v1
