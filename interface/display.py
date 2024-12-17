@@ -7,6 +7,7 @@ import random
 from rich.table import Table
 from rich.console import Console
 from utils.logger import get_logger
+from utils.character_utils import find_character
 
 logger = get_logger(__name__)
 
@@ -61,27 +62,20 @@ class DisplayManager:
             table: Rich table for display
         """
         try:
-            character_name_lower = character_name.lower()
+            # Use the utility function to find the character
+            character_info = find_character(data, character_name)
             
-            # First try exact match on main character
-            main_char_match = data[data['main_character'].str.lower() == character_name_lower]
-            
-            if not main_char_match.empty:
-                self._add_row_to_table(table, main_char_match.iloc[0])
-                logger.info(f"Found main character: {character_name}")
-                return
-            
-            # Then check alts
-            for idx, row in data.iterrows():
-                alt_list = row['alts'].split(', ') if row['alts'] else []
-                if any(alt.lower() == character_name_lower for alt in alt_list):
-                    self._add_row_to_table(table, row)
-                    logger.info(f"Found character as alt: {character_name}")
-                    return
-            
-            # If we get here, no character was found
-            logger.warning(f"Character not found: {character_name}")
-            self.console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
+            if character_info is not None:
+                main_character, points_current = character_info
+                # Find the row in the DataFrame to add to the table
+                row = data[(data['main_character'] == main_character) | 
+                           (data['alts'].str.contains(character_name, case=False, na=False))].iloc[0]
+                self._add_row_to_table(table, row)
+                logger.info(f"Found character: {character_name}")
+            else:
+                # If we get here, no character was found
+                logger.warning(f"Character not found: {character_name}")
+                self.console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
             
         except Exception as e:
             logger.error(f"Error displaying character data: {e}")

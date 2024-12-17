@@ -2,6 +2,7 @@ from typing import List
 import pandas as pd
 from rich.console import Console
 from rich.table import Table
+from utils.character_utils import find_character
 
 class BiddingManager:
     """Manages bidding sessions for characters."""
@@ -29,18 +30,24 @@ class BiddingManager:
         Args:
             character_name: Name of the character to add.
         """
-        # Check if the character is already in the current bid
-        if any(char['main_character'].lower() == character_name.lower() for char in self.current_bid):
-            self.console.print(f"[yellow]Character '{character_name}' is already in the bid![/yellow]")
-            return
+        # Use the utility function to find the character
+        character_info = find_character(self.character_data, character_name)
+        if character_info is not None:
+            main_character, points_current = character_info
 
-        character = self.character_data[self.character_data['main_character'].str.lower() == character_name.lower()]
-        if not character.empty:
-            character_info = character.iloc[0]
-            # Insert character in sorted order based on points
-            self.current_bid.append(character_info)
+            # Check if the main character is already in the current bid
+            if any(char['main_character'].lower() == main_character.lower() for char in self.current_bid):
+                self.console.print(f"[yellow]Character '{main_character}' is already in the bid![/yellow]")
+                return
+
+            # Find the row in the DataFrame to add to the bid
+            row = self.character_data[
+                (self.character_data['main_character'] == main_character) |
+                (self.character_data['alts'].str.contains(character_name, case=False, na=False))
+            ].iloc[0]
+            self.current_bid.append(row)
             self.current_bid.sort(key=lambda x: x['points_current'], reverse=True)
-            self.console.print(f"[cyan]Added {character_name} to the bid.[/cyan]")
+            self.console.print(f"[cyan]Added {main_character} to the bid.[/cyan]")
             self.display_sorted_bid()
         else:
             self.console.print(f"[red]Character '{character_name}' not found![/red]")
