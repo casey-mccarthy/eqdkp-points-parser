@@ -5,6 +5,10 @@ on:
     branches:
       - main  # Change this to your default branch if it's not 'main'
 
+
+permissions:
+  contents: write  # Allows the bot to push changes
+
 jobs:
   release:
     runs-on: ubuntu-latest
