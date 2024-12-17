@@ -21,37 +21,28 @@ jobs:
       - name: Generate Changelog and Bump Version
         id: changelog
         uses: TriPSs/conventional-changelog-action@v6.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          preset: angular  # Uses 'angular' style commits (feat, fix, etc.)
-          outputFile: CHANGELOG.md  # Write changelog to this file
-          versionFile: ./package.json  # Bumps version in package.json (optional)
-          versionPath: version  # Changes the version field in package.json
-          skipEmptyRelease: true  # Skips the release if no changes exist
-          tagPrefix: 'v'  # Uses v1.0.0 as the versioning format
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          preset: angular
+          output-file: CHANGELOG.md
+          version-file: pyproject.toml
+          version-path: tool.poetry.version
+          skip-on-empty: true
+          tag-prefix: 'v'
 
       - name: Debug Changelog Output
         run: |
-          echo "New Version: ${{ steps.changelog.outputs.newVersion }}"
+          echo "New Version: ${{ steps.changelog.outputs.version }}"
 
-      # Step 3: Update pyproject.toml version
-      - name: Update pyproject.toml version
-        if: steps.changelog.outputs.newVersion != ''
-        run: |
-          NEW_VERSION=$(jq -r '.version' package.json)
-          sed -i "s/^version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
-
-      # Step 4: Commit the new version bump and changelog
+      # Step 3: Commit the new version bump and changelog
       # us logged in user for user.name and user.email
       - name: Commit and Push Changes
-        if: steps.changelog.outputs.newVersion != ''  # Only run if a new version was created
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
           git config user.name ${{ github.actor }}
           git config user.email ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
           git add .
-          git commit -m "chore(release): v${{ steps.changelog.outputs.newVersion }} [skip ci]"
-          git tag -a v${{ steps.changelog.outputs.newVersion }} -m "chore(release): v${{ steps.changelog.outputs.newVersion }}"
+          git commit -m "chore(release): v${{ steps.changelog.outputs.version }} [skip ci]"
           git push origin main --follow-tags
 
       # Step 4: Create a new GitHub release
