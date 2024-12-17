@@ -9,7 +9,9 @@ class TestCLI(unittest.TestCase):
     def setUp(self) -> None:
         """Set up test fixtures."""
         self.character_data = pd.DataFrame({
+            'id': [1, 2, 3],
             'main_character': ['Test1', 'Test2', 'Test3'],
+            'alts': ['Alt1, Alt2', '', 'Alt3'],
             'points_current': [100, 200, 150]
         })
         self.cli = CLI(self.character_data)
