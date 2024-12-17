@@ -1,7 +1,7 @@
 """
 Command Line Interface module for user interaction.
 """
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 import os
 from rich.console import Console
@@ -16,8 +16,10 @@ logger = get_logger(__name__)
 @dataclass
 class Command:
     """Represents a CLI command."""
+    name: str
     description: str
     handler: callable
+    shorthand: str
 
 class CLI:
     """Handles command-line interface operations."""
@@ -32,30 +34,30 @@ class CLI:
         self.console = Console()
         self.data = data
         self.display = DisplayManager()
-        self.commands = self._setup_commands()
-
-    def _setup_commands(self) -> Dict[str, Command]:
-        """Set up available CLI commands."""
-        return {
+        self.commands = {
             "character": Command(
-                "Search for a specific character",
-                self._handle_character_search
+                name="character",
+                description="Search for a specific character",
+                handler=self._handle_character_search,
+                shorthand="c"
             ),
             "top": Command(
-                "Show top N characters by DKP",
-                self._handle_top_display
-            ),
-            "random": Command(
-                "Show N random characters",
-                self._handle_random_display
+                name="top",
+                description="Show top N characters by DKP",
+                handler=self._handle_top_display,
+                shorthand="t"
             ),
             "help": Command(
-                "Show available commands",
-                self._handle_help
+                name="help",
+                description="Show available commands",
+                handler=self._handle_help,
+                shorthand="h"
             ),
             "exit": Command(
-                "Exit the application",
-                self._handle_exit
+                name="exit",
+                description="Exit the application",
+                handler=self._handle_exit,
+                shorthand="e"
             )
         }
 
@@ -69,7 +71,8 @@ class CLI:
         """Display welcome message and ASCII art."""
         ascii_art = pyfiglet.figlet_format("EQDKP Parser", font="slant")
         self.console.print(f"[bold cyan]{ascii_art}[/bold cyan]")
-        self.console.print("[yellow]Type 'help' to see available commands[/yellow]")
+        self.console.print("[cyan]Data fetched and processed successfully![/cyan]")
+        self._handle_help()
 
     def _check_environment(self) -> None:
         """Check if required environment variables are set."""
@@ -81,56 +84,85 @@ class CLI:
         """Main command processing loop."""
         while True:
             try:
-                command = Prompt.ask("\nEnter command").lower()
-                if command in self.commands:
-                    self.commands[command].handler()
+                # Show available commands on each loop in yellow
+                self.console.print("\n[yellow dim]Available commands: character/c, top/t, help/h, exit/e[/yellow dim]")
+                
+                user_input = Prompt.ask("\nEnter command").lower().split()
+                if not user_input:
+                    continue
+
+                command = user_input[0]
+                args = user_input[1:] if len(user_input) > 1 else []
+
+                # Check for both full command and shorthand
+                cmd_obj = next(
+                    (cmd for cmd in self.commands.values() 
+                     if command in [cmd.name, cmd.shorthand]),
+                    None
+                )
+
+                if cmd_obj:
+                    cmd_obj.handler(args)
                 else:
                     self.console.print("[red]Invalid command. Type 'help' for available commands.[/red]")
+
             except Exception as e:
                 logger.error(f"Error processing command: {e}")
                 self.console.print(f"[bold red]Error: {e}[/bold red]")
 
-    # Command handlers
-    def _handle_character_search(self) -> None:
+    def _handle_character_search(self, args: List[str]) -> None:
         """Handle character search command."""
         if self.data is None:
             self.console.print("[bold red]No data available![/bold red]")
             return
-        
-        character = Prompt.ask("Enter character name")
-        logger.debug(f"Searching for character: {character}")
-        logger.debug(f"Available columns: {self.data.columns.tolist()}")
-        logger.debug(f"Data sample: {self.data.head(1).to_dict('records')}")
-        
-        try:
-            self.display.display_data(self.data, character_name=character)
-        except Exception as e:
-            logger.error(f"Error searching for character: {e}")
-            self.console.print(f"[bold red]Error searching for character: {e}[/bold red]")
 
-    def _handle_top_display(self) -> None:
+        character = args[0] if args else Prompt.ask("Enter character name")
+        self.display.display_data(self.data, character_name=character)
+
+    def _handle_top_display(self, args: List[str]) -> None:
         """Handle top N display command."""
         if self.data is None:
             self.console.print("[bold red]No data available![/bold red]")
             return
-        count = IntPrompt.ask("Enter number of characters to show", default=5)
-        self.display.display_data(self.data, top=count)
 
-    def _handle_random_display(self) -> None:
-        """Handle random display command."""
-        if self.data is None:
-            self.console.print("[bold red]No data available![/bold red]")
-            return
-        count = IntPrompt.ask("Enter number of random characters to show", default=5)
-        self.display.display_data(self.data, random_count=count)
+        try:
+            count = int(args[0]) if args else IntPrompt.ask("Enter number of characters to show", default=5)
+            self.display.display_data(self.data, top=count)
+        except ValueError:
+            self.console.print("[red]Please provide a valid number[/red]")
 
-    def _handle_help(self) -> None:
-        """Display help information."""
-        self.console.print("\n[bold cyan]Available Commands:[/bold cyan]")
-        for cmd, details in self.commands.items():
-            self.console.print(f"[green]{cmd}[/green]: {details.description}")
+    def _handle_help(self, args: List[str] = None) -> None:
+        """
+        Display help information with usage examples.
+        
+        Args:
+            args: Optional list of command arguments (unused)
+        """
+        help_text = """
+[bold cyan]Available Commands[/bold cyan]
 
-    def _handle_exit(self) -> None:
-        """Handle exit command."""
+[green]Search Character[/green]
+  command: character, c
+  usage: c dainae
+
+[green]Show Top Characters[/green]
+  command: top, t
+  usage: t 10
+
+[green]Show Help[/green]
+  command: help, h
+
+[green]Exit Application[/green]
+  command: exit, e
+"""
+        self.console.print(help_text)
+
+    def _handle_exit(self, args: List[str] = None) -> None:
+        """
+        Handle exit command.
+        
+        Args:
+            args: Optional list of command arguments (unused)
+        """
         self.console.print("[yellow]Goodbye![/yellow]")
         exit(0)

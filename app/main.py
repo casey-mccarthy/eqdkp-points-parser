@@ -3,6 +3,8 @@ Main entry point for the EQDKP Parser application.
 """
 from typing import NoReturn
 import sys
+import os
+import logging
 
 from app.config import AppConfig
 from core.data_fetcher import DataFetcher
@@ -10,7 +12,6 @@ from core.data_parser import DataParser
 from core.data_processor import DataProcessor
 from interface.cli import CLI
 from utils.logger import get_logger
-import pandas as pd
 
 logger = get_logger(__name__)
 
@@ -57,47 +58,42 @@ class EQDKPParserApp:
             raise ValueError("API key not found in environment variables")
         logger.info("Configuration validated")
 
-    def _fetch_and_process_data(self) -> pd.DataFrame:
-        """
-        Fetch, parse, and process the DKP data.
-        
-        Returns:
-            pd.DataFrame: Processed data frame
-        
-        Raises:
-            RuntimeError: If any step in the data pipeline fails
-        """
-        try:
-            # Fetch XML data
-            xml_file = self.data_fetcher.fetch_data(
-                self.config.api_key,
-                self.config.xml_output_file
-            )
-            if not xml_file:
-                raise RuntimeError("Failed to fetch data from API")
+    def _fetch_and_process_data(self) -> None:
+        """Fetch, parse, and process the DKP data."""
+        # Fetch XML data
+        xml_file = self.data_fetcher.fetch_data(
+            self.config.api_key,
+            self.config.xml_output_file
+        )
+        if not xml_file:
+            raise RuntimeError("Failed to fetch data from API")
 
-            # Parse XML data
-            parsed_data = self.data_parser.parse_xml(xml_file)
-            if not parsed_data:
-                raise RuntimeError("Failed to parse XML data")
+        # Parse XML data
+        parsed_data = self.data_parser.parse_xml(xml_file)
+        if not parsed_data:
+            raise RuntimeError("Failed to parse XML data")
 
-            # Process data
-            processed_data = self.data_processor.process_data(
-                parsed_data,
-                self.config.csv_output_file
-            )
-            if processed_data.empty:
-                raise RuntimeError("No data processed")
+        # Process data
+        processed_data = self.data_processor.process_data(
+            parsed_data,
+            self.config.csv_output_file
+        )
+        if processed_data.empty:
+            raise RuntimeError("No data processed")
 
-            logger.info("Data fetching and processing completed successfully")
-            return processed_data
+        logger.info("Data fetching and processing completed successfully")
+        return processed_data
 
-        except Exception as e:
-            logger.error(f"Data pipeline error: {str(e)}")
-            raise RuntimeError(f"Data pipeline failed: {str(e)}")
-
-def main() -> None:
-    """Application entry point."""
+def main(debug: bool = False) -> None:
+    """
+    Application entry point.
+    
+    Args:
+        debug: Enable debug output if True
+    """
+    # Set debug mode environment variable
+    os.environ['DEBUG_MODE'] = 'true' if debug else 'false'
+    
     app = EQDKPParserApp()
     app.run()
 

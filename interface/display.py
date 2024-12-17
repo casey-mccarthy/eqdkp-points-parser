@@ -20,8 +20,7 @@ class DisplayManager:
     def display_data(self, 
                     data: pd.DataFrame, 
                     character_name: Optional[str] = None, 
-                    top: Optional[int] = None, 
-                    random_count: Optional[int] = None) -> None:
+                    top: Optional[int] = None) -> None:
         """
         Display DKP data based on specified filters.
         
@@ -29,7 +28,6 @@ class DisplayManager:
             data: DataFrame containing the DKP data
             character_name: Optional name to filter by
             top: Optional number of top characters to show
-            random_count: Optional number of random characters to show
         """
         table = self._create_table("Aggregated DKP Points")
         
@@ -37,10 +35,9 @@ class DisplayManager:
             self._display_character(data, character_name, table)
         elif top:
             self._display_top(data, top, table)
-        elif random_count:
-            self._display_random(data, random_count, table)
         else:
-            self._display_random(data, 5, table)  # Default to 5 random entries
+            # Display all characters if no filter is specified
+            self._display_top(data, len(data), table)
             
         self.console.print(table)
         logger.info("Data display completed successfully")
@@ -96,14 +93,6 @@ class DisplayManager:
         for _, row in top_rows.iterrows():
             self._add_row_to_table(table, row)
         logger.info(f"Displayed top {count} characters")
-
-    def _display_random(self, data: pd.DataFrame, count: int, table: Table) -> None:
-        """Display random N characters."""
-        count = min(count, len(data))
-        random_indices = random.sample(range(len(data)), count)
-        for idx in random_indices:
-            self._add_row_to_table(table, data.iloc[idx])
-        logger.info(f"Displayed {count} random characters")
 
     def _add_row_to_table(self, table: Table, row: pd.Series) -> None:
         """Add a row of data to the table."""

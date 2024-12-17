@@ -19,34 +19,40 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     """
     logger = logging.getLogger(name)
     
-    # Prevent duplicate handlers
-    if logger.hasHandlers():
-        return logger
-    
-    logger.setLevel(level)
-    
-    # Create formatters and handlers
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    
-    # Console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
-    
-    # File handler
-    log_dir = "logs"
-    os.makedirs(log_dir, exist_ok=True)
-    
-    file_handler = TimedRotatingFileHandler(
-        os.path.join(log_dir, f"{name}.log"),
-        when="midnight",
-        interval=1,
-        backupCount=7
-    )
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    # Only configure if the logger doesn't have handlers
+    if not logger.handlers:
+        logger.setLevel(level)
+        
+        # Create logs directory if it doesn't exist
+        os.makedirs('logs', exist_ok=True)
+        
+        # File handler (always writes to file)
+        file_handler = TimedRotatingFileHandler(
+            filename=os.path.join('logs', 'dkp_log.log'),
+            when='midnight',
+            interval=1,
+            backupCount=30,
+            encoding='utf-8'
+        )
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        ))
+        logger.addHandler(file_handler)
+        
+        # Console handler (only shows in debug mode)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        ))
+        
+        # Set console handler level based on debug flag
+        if os.getenv('DEBUG_MODE') == 'true':
+            console_handler.setLevel(logging.DEBUG)
+        else:
+            console_handler.setLevel(logging.CRITICAL)  # Only show critical errors
+            
+        logger.addHandler(console_handler)
     
     return logger
