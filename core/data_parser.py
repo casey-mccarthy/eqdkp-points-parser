@@ -118,9 +118,9 @@ class DataParser:
                 'class_name': main_char.class_name,
                 'active': main_char.active,
                 'points': {
-                    'current': main_char.points.current,
-                    'earned': main_char.points.earned,
-                    'spent': main_char.points.spent,
+                    'current': main_char.points.current_with_twink,
+                    'earned': main_char.points.earned_with_twink,
+                    'spent': main_char.points.spent_with_twink,
                     'current_with_twink': main_char.points.current_with_twink,
                     'earned_with_twink': main_char.points.earned_with_twink,
                     'spent_with_twink': main_char.points.spent_with_twink

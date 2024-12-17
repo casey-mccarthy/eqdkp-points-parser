@@ -33,19 +33,17 @@ class DataProcessor:
                 alt_names = []
                 for alt in char_data['alts']:
                     if isinstance(alt, tuple):
-                        # Handle tuple format (id, name)
                         alt_names.append(alt[1])
                     elif isinstance(alt, dict):
-                        # Handle dictionary format with 'name' key
                         alt_names.append(alt['name'])
                 
                 record = {
                     'id': char_data['id'],
                     'main_character': char_name,
                     'class_name': char_data['class_name'],
-                    'points_current': char_data['points']['current'],
-                    'points_earned': char_data['points']['earned'],
-                    'points_spent': char_data['points']['spent'],
+                    'points_current': char_data['points']['current_with_twink'],
+                    'points_earned': char_data['points']['earned_with_twink'],
+                    'points_spent': char_data['points']['spent_with_twink'],
                     'alts': ', '.join(alt_names) if alt_names else ''
                 }
                 processed_records.append(record)
