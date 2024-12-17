@@ -65,7 +65,15 @@ class BiddingManager:
         self.console.print(table)
 
     def end_bid(self) -> None:
-        """End the current bidding session."""
+        """End the current bidding session and announce the winner."""
         self.console.print("[yellow]Bidding session ended![/yellow]")
         self.display_sorted_bid()
+
+        if self.current_bid:
+            # The winner is the character with the highest points
+            winner = self.current_bid[0]
+            self.console.print(f"[bold green]Winner: {winner['main_character']} with {winner['points_current']} points![/bold green]")
+        else:
+            self.console.print("[red]No participants in the bid.[/red]")
+
         self.current_bid = [] 
