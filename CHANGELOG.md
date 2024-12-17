@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.2.0...v0.2.1) (2024-12-17)
+
+
+### Bug Fixes
+
+* does uv tool work? ([9660233](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/96602335d15ed38da50532fff3b0730684a5c6e6))
+
+
+
 # [0.2.0](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.1.3...v0.2.0) (2024-12-17)
 
 

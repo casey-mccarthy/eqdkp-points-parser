@@ -53,4 +53,4 @@ multi_line_output = 3
 packages = [ "src/eqdkp_parser" ]
 
 [tool.uv]
-version = "0.2.0"
+version = "0.2.1"
