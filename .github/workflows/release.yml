@@ -32,7 +32,8 @@ jobs:
           tagPrefix: 'v'  # Uses v1.0.0 as the versioning format
 
       - name: Debug Changelog Output
-        run: echo "New Version: ${{ steps.changelog.outputs.newVersion }}"
+        run: |
+          echo "New Version: ${{ steps.changelog.outputs.newVersion }}"
 
       # Step 3: Update pyproject.toml version
       - name: Update pyproject.toml version
