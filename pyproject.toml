@@ -53,4 +53,4 @@ multi_line_output = 3
 packages = [ "src/eqdkp_parser" ]
 
 [tool.poetry]
-version = "0.1.2"
+version = "0.1.3"
