@@ -10,6 +10,7 @@ import pyfiglet
 from interface.display import DisplayManager
 from utils.logger import get_logger
 import pandas as pd
+from core.bidding_manager import BiddingManager
 
 logger = get_logger(__name__)
 
@@ -34,6 +35,7 @@ class CLI:
         self.console = Console()
         self.data = data
         self.display = DisplayManager()
+        self.bidding_manager = BiddingManager(data)
         self.commands = {
             "character": Command(
                 name="character",
@@ -46,6 +48,12 @@ class CLI:
                 description="Show top N characters by DKP",
                 handler=self._handle_top_display,
                 shorthand="t"
+            ),
+            "bid": Command(
+                name="bid",
+                description="Enter bidding mode",
+                handler=self._handle_bid_mode,
+                shorthand="b"
             ),
             "help": Command(
                 name="help",
@@ -85,6 +93,7 @@ class CLI:
                 # Show available commands on each loop in yellow
                 self.console.print("\n[yellow]Options: character <name> or c <name>, "
                                  "top <number> or t <number>, "
+                                 "bid, b, "
                                  "help or h, "
                                  "exit or e[/yellow]")
                 
@@ -132,6 +141,17 @@ class CLI:
         except ValueError:
             self.console.print("[red]Please provide a valid number[/red]")
 
+    def _handle_bid_mode(self, args: List[str]) -> None:
+        """Enter bidding mode."""
+        self.bidding_manager.start_bid()
+        while True:
+            command = Prompt.ask("[bold cyan]Enter character name to add or 'end'/'e' to finish bidding[/bold cyan]")
+            if command.lower() in ['end', 'e']:
+                self.bidding_manager.end_bid()
+                break
+            else:
+                self.bidding_manager.add_character(command)
+
     def _handle_help(self, args: List[str] = None) -> None:
         """
         Display help information with usage examples.
@@ -149,6 +169,10 @@ class CLI:
 [green]Show Top Characters[/green]
   command: top, t
   usage: t 10
+
+[green]Enter Bidding Mode[/green]
+  command: bid, b
+  usage: b
 
 [green]Show Help[/green]
   command: help, h
