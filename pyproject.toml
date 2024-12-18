@@ -1,6 +1,6 @@
 [project]
 name = "eqdkp_parser"
-version = "0.1.0"
+version = "0.2.0"
 description = "EQDKP DKP points parser and analyzer"
 readme = "README.md"
 changelog = "CHANGELOG.md"

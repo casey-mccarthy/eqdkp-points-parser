@@ -1,4 +1,19 @@
-# 0.1.0 (2024-12-17)
+# [0.2.0](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.1.0...v0.2.0) (2024-12-18)
+
+
+### Bug Fixes
+
+* ensure current bid is sorted after adding a character ([f3a97b5](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/f3a97b5069c0ee26ea7a3b0235a6522a40e4a49b))
+
+
+### Features
+
+* add bidding mode to CLI interface ([faa0b08](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/faa0b08c0efbb850e51d7eb88d4f29dbaf66c81a))
+* enhance end_bid method in BiddingManager to announce winner ([ec5d965](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/ec5d9656fb4490d37e484caee657fa41b5b540f9))
+
+
+
+# [0.1.0](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/5eb311c387d1a642b08d3fde0402e4d45d2c9e59...v0.1.0) (2024-12-17)
 
 
 ### Bug Fixes
