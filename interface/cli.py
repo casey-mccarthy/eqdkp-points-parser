@@ -11,7 +11,7 @@ from interface.display import DisplayManager
 from utils.logger import get_logger
 import pandas as pd
 from core.bidding_manager import BiddingManager
-
+from core.database import DatabaseManager
 logger = get_logger(__name__)
 
 @dataclass
@@ -25,7 +25,7 @@ class Command:
 class CLI:
     """Handles command-line interface operations."""
     
-    def __init__(self, data: Optional[pd.DataFrame] = None) -> None:
+    def __init__(self) -> None:
         """
         Initialize the CLI interface.
         
@@ -33,9 +33,10 @@ class CLI:
             data: DataFrame containing the processed DKP data
         """
         self.console = Console()
-        self.data = data
+        # add database manager
+        self.db_manager = DatabaseManager()
         self.display = DisplayManager()
-        self.bidding_manager = BiddingManager(data)
+        self.bidding_manager = BiddingManager()
         self.commands = {
             "character": Command(
                 name="character",

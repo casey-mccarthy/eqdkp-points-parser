@@ -29,7 +29,6 @@ class EQDKPParserApp:
         self.progress = ProgressManager()
         self.console = Console()
         self.cli = None
-        self.characters: List[Character] = []  # Initialize an empty list of Character models
         self.db_manager = DatabaseManager()
         
         logger.info("Application initialized")
@@ -52,7 +51,7 @@ class EQDKPParserApp:
             self._validate_config()
             self._fetch_character_data()
             self._fetch_ranks_data()
-            self.cli = CLI(self.characters)
+            self.cli = CLI()
             self.cli.start()
             
         except Exception as e:

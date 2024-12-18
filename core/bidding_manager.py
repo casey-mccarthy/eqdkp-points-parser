@@ -1,20 +1,14 @@
-from typing import List
-import pandas as pd
+from typing import List, Optional
 from rich.console import Console
 from rich.table import Table
-from utils.character_utils import find_character
+from core.database import DatabaseManager
 
 class BiddingManager:
     """Manages bidding sessions for characters."""
 
-    def __init__(self, character_data: pd.DataFrame) -> None:
-        """
-        Initialize the bidding manager with character data.
-
-        Args:
-            character_data: DataFrame containing character points data.
-        """
-        self.character_data = character_data
+    def __init__(self) -> None:
+        """Initialize the bidding manager."""
+        self.db_manager = DatabaseManager()
         self.current_bid = []
         self.console = Console()
 
@@ -30,22 +24,23 @@ class BiddingManager:
         Args:
             character_name: Name of the character to add.
         """
-        # Use the utility function to find the character
-        character_info = find_character(self.character_data, character_name)
+        # Query the database for the character
+        character_info = self.db_manager.get_character_by_name(character_name)
         if character_info is not None:
-            main_character, points_current = character_info
+            main_character = character_info.name
+            character_rank = character_info.rank_name
+            points_current = character_info.points.current_with_twink
 
             # Check if the main character is already in the current bid
             if any(char['main_character'].lower() == main_character.lower() for char in self.current_bid):
                 self.console.print(f"[yellow]Character '{main_character}' is already in the bid![/yellow]")
                 return
 
-            # Find the row in the DataFrame to add to the bid
-            row = self.character_data[
-                (self.character_data['main_character'] == main_character) |
-                (self.character_data['alts'].str.contains(character_name, case=False, na=False))
-            ].iloc[0]
-            self.current_bid.append(row)
+            # Add character to the current bid
+            self.current_bid.append({
+                'main_character': f"{main_character} ({character_rank})",
+                'points_current': points_current
+            })
             self.current_bid.sort(key=lambda x: x['points_current'], reverse=True)
             self.console.print(f"[cyan]Added {main_character} to the bid.[/cyan]")
             self.display_sorted_bid()

@@ -12,8 +12,9 @@ class DatabaseManager:
         return self.Session() 
     
     def get_character_by_name(self, character_name: str):
+        """Get a character by its name. This is case insensitive."""
         session = self.get_session()
-        return session.query(Character).filter(Character.name == character_name).first()
+        return session.query(Character).filter(Character.name.ilike(character_name)).first()
     
     def update_character_rank(self, character_name: str, rank_id: int, rank_name: str):
         session = self.get_session()
