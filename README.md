@@ -1,4 +1,3 @@
-
 # EQDKP Parser Project
 
 This project is a DKP (Dragon Kill Points) parser that exports point data from an EQDKP data via XML files. It then aggregates and associates characters based on their main and alt designations and outputs this information in a clean and structured way using an interactive CLI.
@@ -11,11 +10,12 @@ Here’s an example of the console output:
 
 ## Features
 
+- **Interactive Command Line Interface**: Provides an interactive CLI for viewing data.
+- **Fetch Data from API**: Securely fetches data from a remote API using an API key stored in an environment file.
 - **Main and Alt Character Processing**: Identifies and separates main characters from their alts, ensuring alts are only processed after all mains have been identified.
 - **Data Aggregation**: Collects point information including current, earned, spent, and adjusted points for each main character.
-- **Fetch Data from API**: Securely fetches data from a remote API using an API key stored in an environment file.
-- **Interactive Command Line Interface**: Provides an interactive CLI for viewing data.
-- **Logging**: Logs all processing steps, including when main characters and alts are associated, and captures user commands and errors.
+- **Bidding Mode**: Allows users to enter a bidding mode to manage character bids interactively.
+
 
 ## Data Model
 
@@ -83,32 +83,18 @@ Assuming you already have Python installed, follow these steps to set up the pro
      ```plaintext
      top <number> or t <number>
      ```
-   - **Random N Characters**:
+   - **Enter Bidding Mode**:
      ```plaintext
-     random <number> or r <number>
+     bid or b
      ```
    - **Exit**:
      ```plaintext
-     exit
+     exit or e
      ```
 
 ## Logging
 
 Logs are stored in a file named `main_script.log` in the project directory. The log captures all key steps and associations during processing, as well as user commands and errors.
-
-
-## Project Structure
-
-/project-directory
-│
-├── fetch_points.py          # Script for fetching points data from API
-├── parse_dkp.py             # Script for parsing the fetched XML data
-├── print_data.py            # Script for displaying parsed data in a formatted table
-├── main.py                  # Main script that orchestrates the entire process
-├── .env                     # Environment file for storing API key (not committed to repo)
-├── requirements.txt         # Python dependencies
-├── main_script.log          # Log file capturing all processing steps
-└── README.md                # Project documentation
 
 
 ## Requirements
@@ -120,7 +106,6 @@ Logs are stored in a file named `main_script.log` in the project directory. The 
 - **requests** library
 - **dotenv** library
 - **pyfiglet** library
-
 
 ## Author
 
