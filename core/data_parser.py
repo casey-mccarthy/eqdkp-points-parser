@@ -55,9 +55,11 @@ class DataParser:
                         active=bool(int(player.findtext('active', 0))),
                         hidden=bool(int(player.findtext('hidden', 0))),
                         main_id=int(player.findtext('main_id', 0)) if player.find('main_id') is not None else None,
-                        main_name=player.findtext('main_name', None)
+                        main_name=player.findtext('main_name', None),
+                        # add rank as empty for now
+                        rank_id=None,
+                        rank_name=None
                     )
-                    
                     logger.info(f"Created character model for {player_name} (ID: {character_model.id})")
                     
                     # Extract points data
@@ -114,3 +116,50 @@ class DataParser:
             session.close()
             logger.info("Database session closed")
     
+    def parse_character_rank_data(self, xml_data: str) -> None:
+        """
+        Parse the XML data from the character_rank API call and update character ranks.
+
+        Args:
+            xml_data (str): The XML data as a string.
+        """
+        session = self.db_manager.get_session()
+        logger.info("Starting XML data parsing")
+        
+        try:
+            root = ET.fromstring(xml_data)
+            logger.info("Successfully parsed XML string into ElementTree")
+
+            # Navigate to the characters element
+            characters_element = root.find('characters')
+            if characters_element is None:
+                logger.error("No characters element found in XML data")
+                return
+
+            for character in characters_element:
+                character_id = int(character.findtext('character_id', 0))
+                rank_id = int(character.findtext('rank_id', 0))
+                rank_name = character.findtext('rank_name', 'Unknown')
+
+                # Retrieve the character from the database
+                character_data = session.query(Character).filter_by(id=character_id).first()
+                
+                if character_data is not None:
+                    logger.info(f"Updating rank for character ID {character_id}")
+                    character_data.rank_id = rank_id
+                    character_data.rank_name = rank_name
+                else:
+                    logger.warning(f"Character with ID {character_id} not found in the database")
+
+            session.commit()
+            logger.info("Character ranks updated successfully")
+
+        except Exception as e:
+            logger.error(f"Error parsing XML data: {e}")
+            logger.exception("Full traceback:")
+            session.rollback()
+            raise  # Re-raise the exception after logging
+
+        finally:
+            session.close()
+            logger.info("Database session closed")

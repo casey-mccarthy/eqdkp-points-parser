@@ -51,6 +51,7 @@ class EQDKPParserApp:
             
             self._validate_config()
             self._fetch_character_data()
+            self._fetch_ranks_data()
             self.cli = CLI(self.characters)
             self.cli.start()
             
@@ -77,6 +78,7 @@ class EQDKPParserApp:
         try:    
             self.progress.show_progress("Parsing character data...", success=False)
             self.data_parser.parse_character_data(character_data)
+
         except Exception as e:
             self.progress.show_progress("Error parsing XML data", success=False)
             logger.error(f"Error parsing XML data: {e}")
@@ -84,9 +86,12 @@ class EQDKPParserApp:
         
         self.progress.show_progress("Character data successfully fetched and updated")
 
-
-
-
+    def _fetch_ranks_data(self) -> None:
+        """Fetch ranks data from the API and update the local list of ranks."""
+        self.progress.show_progress("Fetching ranks data from API...", success=False)
+        ranks_data = self.data_fetcher.fetch_ranks_data(self.config.admin_api_key)
+        self.data_parser.parse_character_rank_data(ranks_data)
+        self.progress.show_progress("Ranks data successfully fetched and updated")  
 
 def main(debug: bool = False) -> None:
     """

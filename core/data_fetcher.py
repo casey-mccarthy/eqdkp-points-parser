@@ -4,6 +4,9 @@ from rich.console import Console
 from utils.logger import get_logger
 from core.database import DatabaseManager
 from core.models import Character
+from core.api_refs import APIReadPaths
+import xml.etree.ElementTree as ET
+from typing import List, Dict, Optional
 
 logger = get_logger(__name__)
 
@@ -36,6 +39,11 @@ class DataFetcher:
                 logger.info("Data successfully fetched from the API")
                 logger.debug(f"Response content type: {type(response.text)}")
                 logger.debug(f"First 200 characters of response: {response.text[:200]}")
+
+                # save to file
+                with open("points.xml", "w") as f:
+                    f.write(response.text)
+
                 return response.text  # Ensure this is being handled correctly
             else:
                 logger.error(f"Failed to fetch data. Status: {response.status_code}")
@@ -44,6 +52,33 @@ class DataFetcher:
         except Exception as e:
             logger.error(f"An error occurred: {e}")
             return None
+
+    def fetch_ranks_data(self, api_token: str) -> Optional[str]:    
+        """
+        Fetch ranks data from the API and return the XML data.
+        
+        Args:
+            api_token: The API token for authentication
+        
+        Returns:
+            The raw XML data as a string, or None if the request fails.
+        """
+        api_url = f"{self.base_url}?function=character_ranks&atoken={api_token}&atype=api"
+
+        try:
+            response = requests.get(api_url)
+            if response.status_code == 200:
+                logger.info("Ranks data successfully fetched from the API")
+
+
+                return response.text
+            else:
+                logger.error(f"Failed to fetch ranks data. Status: {response.status_code}")
+                return None
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
+            return None
+        
 
     def debug_response(self, response: requests.Response, file_path: str) -> None:
         """
@@ -69,3 +104,4 @@ class DataFetcher:
             logger.error(f"File not found: {file_path}")
         except Exception as e:
             logger.error(f"Error reading file: {e}")
+

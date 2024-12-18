@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, F
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from datetime import datetime
+from typing import Optional
 
 Base = declarative_base()
 
@@ -58,6 +59,8 @@ class Character(Base):
         hidden (bool): Whether the character is hidden.
         main_id (int): The ID of the main character.
         main_name (str): The name of the main character.
+        rank_id (int): The ID of the rank the character is.
+        rank_name (str): The name of the rank the character is.
     """
     __tablename__ = 'characters'
 
@@ -66,6 +69,10 @@ class Character(Base):
     name = Column(String, nullable=False, index=True)
     class_id = Column(Integer, nullable=False)
     class_name = Column(String, nullable=False)
+
+    # Rank Information can be empty for now
+    rank_id = Column(Integer, nullable=True, default=None)
+    rank_name = Column(String, nullable=True, default=None)
     
     # Status
     active = Column(Boolean, default=True)
@@ -84,6 +91,8 @@ class Character(Base):
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 
     def __repr__(self) -> str:
         return f"<Character(name='{self.name}', class_name='{self.class_name}', active={self.active})>" 
