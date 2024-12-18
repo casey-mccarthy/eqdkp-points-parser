@@ -4,7 +4,6 @@ Main entry point for the EQDKP Parser application.
 from typing import NoReturn, List
 import sys
 import os
-import logging
 import pyfiglet
 from xml.etree import ElementTree as ET
 
