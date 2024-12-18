@@ -72,18 +72,17 @@ class EQDKPParserApp:
     def _fetch_character_data(self) -> None:
         """Fetch character data from the API and update the local list of characters."""
         self.progress.show_progress("Fetching character data from API...", success=False)
-        character_data = self.data_fetcher.fetch_data(self.config.api_key)
+        character_data = self.data_fetcher.fetch_character_data(self.config.api_key)
 
         # Parse the XML data and save to database
         try:    
             self.progress.show_progress("Parsing character data...", success=False)
-            self.data_parser.parse_data(character_data)
+            self.data_parser.parse_character_data(character_data)
         except Exception as e:
             self.progress.show_progress("Error parsing XML data", success=False)
             logger.error(f"Error parsing XML data: {e}")
             return
         
-
         self.progress.show_progress("Character data successfully fetched and updated")
 
 

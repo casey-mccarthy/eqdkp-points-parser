@@ -16,7 +16,7 @@ class DataParser:
         """Initialize the DataParser with a DatabaseManager instance."""
         self.db_manager = DatabaseManager()
     
-    def parse_data(self, xml_data: str) -> None:
+    def parse_character_data(self, xml_data: str) -> None:
         """Parse the XML data and save to the database.
         
         Args:

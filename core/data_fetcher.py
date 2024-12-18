@@ -16,7 +16,7 @@ class DataFetcher:
         self.base_url = "https://dkp.kwsm.app/api.php"
         self.db_manager = DatabaseManager()
 
-    def fetch_data(self, api_token: str) -> Optional[str]:
+    def fetch_character_data(self, api_token: str) -> Optional[str]:
         """
         Fetch points data from the API and return the XML data.
         
