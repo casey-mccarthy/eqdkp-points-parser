@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker, joinedload
 from core.models import Base, Character
 
@@ -33,8 +33,16 @@ class DatabaseManager:
     def get_top_characters_by_points(self, count: int):
         """Get the top N characters by their current points."""
         session = self.get_session()
-        try:
-            # Assuming CharacterPoints is a related model with a 'current' attribute
-            return session.query(Character).options(joinedload(Character.points)).order_by(Character.points.current_with_twink.desc()).limit(count).all()
-        finally:
-            session.close()
+        
+        # return the top N characters by their current points
+        # should only return main characters
+        characters = session.query(Character).filter(Character.main_id == Character.id).order_by(desc(Character.current_with_twink)).limit(count).all()
+
+        for character in characters:
+            print(f"Character: {character.name}, Current Points: {character.current_with_twink}")
+
+        return characters
+        
+      
+
+

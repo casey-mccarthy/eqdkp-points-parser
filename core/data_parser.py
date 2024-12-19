@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from utils.logger import get_logger
 import pandas as pd
 from core.database import DatabaseManager
-from core.models import Character, CharacterPoints
+from core.models import Character
 
 logger = get_logger(__name__)
 
@@ -17,11 +17,7 @@ class DataParser:
         self.db_manager = DatabaseManager()
     
     def parse_character_data(self, xml_data: str) -> None:
-        """Parse the XML data and save to the database.
-        
-        Args:
-            xml_data (str): XML string containing character and DKP data
-        """
+        """Parse the XML data and save to the database."""
         session = self.db_manager.get_session()
         logger.info("Starting XML data parsing")
         
@@ -29,88 +25,45 @@ class DataParser:
             root = ET.fromstring(xml_data)
             logger.info("Successfully parsed XML string into ElementTree")
 
-            # Get the players element which contains all player nodes
             players_element = root.find('players')
             if players_element is None:
                 logger.error("No players element found in XML data")
                 return
             
-            total_players = len(players_element)
-            logger.info(f"Found {total_players} player records to process")
-            
-            processed_count = 0
-            error_count = 0
-            
             for player in players_element.findall('player'):
-                try:
-                    player_name = player.findtext('name', 'Unknown')
-                    logger.info(f"Processing player: {player_name}")
-                    
-                    # Extract character data with safe defaults
-                    character_model = Character(
-                        id=int(player.findtext('id', 0)),
-                        name=player_name,
-                        class_id=int(player.findtext('class_id', 0)),
-                        class_name=player.findtext('class_name', 'Unknown'),
-                        active=bool(int(player.findtext('active', 0))),
-                        hidden=bool(int(player.findtext('hidden', 0))),
-                        main_id=int(player.findtext('main_id', 0)) if player.find('main_id') is not None else None,
-                        main_name=player.findtext('main_name', None),
-                        # add rank as empty for now
-                        rank_id=None,
-                        rank_name=None
-                    )
-                    logger.info(f"Created character model for {player_name} (ID: {character_model.id})")
-                    
-                    # Extract points data
-                    points_element = player.find('points/multidkp_points')
-                    if points_element is not None:
-                        logger.info(f"Processing DKP points for {player_name}")
-                        points_model = CharacterPoints(
-                            character_id=character_model.id,
-                            current=float(points_element.findtext('points_current', 0)),
-                            current_with_twink=float(points_element.findtext('points_current_with_twink', 0)),
-                            earned=float(points_element.findtext('points_earned', 0)),
-                            earned_with_twink=float(points_element.findtext('points_earned_with_twink', 0)),
-                            spent=float(points_element.findtext('points_spent', 0)),
-                            spent_with_twink=float(points_element.findtext('points_spent_with_twink', 0)),
-                            adjustment=float(points_element.findtext('points_adjustment', 0)),
-                            adjustment_with_twink=float(points_element.findtext('points_adjustment_with_twink', 0))
-                        )
-                        
-                        # Link points to character
-                        character_model.points = points_model
-                        logger.info(f"DKP points processed for {player_name}: current={points_model.current}, earned={points_model.earned}")
-                    else:
-                        logger.warning(f"No DKP points data found for {player_name}")
-                    
-                    # Add to session and commit
-                    session.merge(character_model)
-                    processed_count += 1
-                    
-                    if processed_count % 100 == 0:  # Log progress every 100 players
-                        logger.info(f"Processed {processed_count}/{total_players} players")
-                    
-                except Exception as player_error:
-                    error_count += 1
-                    logger.error(f"Error processing player {player_name}: {player_error}")
-                    logger.exception("Player processing traceback:")
-                    continue  # Continue with next player
+                player_name = player.findtext('name', 'Unknown')
+                logger.debug(f"Processing player: {player_name}")
                 
-            session.commit()
-            logger.info(f"XML parsing complete. Successfully processed {processed_count} players with {error_count} errors")
+                character_model = Character(
+                    id=int(player.findtext('id', 0)),
+                    name=player_name,
+                    class_id=int(player.findtext('class_id', 0)),
+                    class_name=player.findtext('class_name', 'Unknown'),
+                    active=bool(int(player.findtext('active', 0))),
+                    hidden=bool(int(player.findtext('hidden', 0))),
+                    main_id=int(player.findtext('main_id', 0)) if player.find('main_id') is not None else None,
+                    main_name=player.findtext('main_name', None),
+                    rank_id=None,
+                    rank_name=None,
+                    current=float(player.findtext('points/multidkp_points/points_current', 0)),
+                    current_with_twink=float(player.findtext('points/multidkp_points/points_current_with_twink', 0)),
+                    earned=float(player.findtext('points/multidkp_points/points_earned', 0)),
+                    earned_with_twink=float(player.findtext('points/multidkp_points/points_earned_with_twink', 0)),
+                    spent=float(player.findtext('points/multidkp_points/points_spent', 0)),
+                    spent_with_twink=float(player.findtext('points/multidkp_points/points_spent_with_twink', 0)),
+                    adjustment=float(player.findtext('points/multidkp_points/points_adjustment', 0)),
+                    adjustment_with_twink=float(player.findtext('points/multidkp_points/points_adjustment_with_twink', 0))
+                )
+                
+                session.merge(character_model)
             
-            # Log summary statistics
-            if error_count > 0:
-                logger.warning(f"Encountered {error_count} errors while processing {total_players} players")
-            else:
-                logger.info("All players processed successfully")
-
+            session.commit()
+            logger.info("XML parsing complete.")
+        
         except Exception as e:
             logger.error(f"Critical error parsing XML data: {e}")
-            logger.exception("Full traceback:")
             session.rollback()
-            raise  # Re-raise the exception after logging
+            raise
         
         finally:
             session.close()
@@ -137,6 +90,7 @@ class DataParser:
                 return
 
             for character in characters_element:
+                character_name = character.findtext('character_name', 'Unknown')
                 character_id = int(character.findtext('character_id', 0))
                 rank_id = int(character.findtext('rank_id', 0))
                 rank_name = character.findtext('rank_name', 'Unknown')
@@ -145,11 +99,11 @@ class DataParser:
                 character_data = session.query(Character).filter_by(id=character_id).first()
                 
                 if character_data is not None:
-                    logger.info(f"Updating rank for character ID {character_id}")
+                    logger.debug(f"Updating rank for character ID {character_id}")
                     character_data.rank_id = rank_id
                     character_data.rank_name = rank_name
                 else:
-                    logger.warning(f"Character with ID {character_id} not found in the database")
+                    logger.warning(f"Character {character_name} with ID {character_id} not found in the database")
 
             session.commit()
             logger.info("Character ranks updated successfully")

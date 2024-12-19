@@ -140,8 +140,8 @@ class CLI:
             table.add_row("Name", character_info.name)
             table.add_row("Class", character_info.class_name)
             table.add_row("Rank", character_info.rank_name or "N/A")
-            table.add_row("MMBz (C)", str(character_info.points.current_with_twink), style="green")
-            table.add_row("MMBz (L)", str(character_info.points.earned_with_twink), style="yellow")
+            table.add_row("MMBz (C)", str(character_info.current_with_twink), style="green")
+            table.add_row("MMBz (L)", str(character_info.earned_with_twink), style="yellow")
 
             # add all other alt characters (exclude the provided character) with this format: <name> (<class>)
             alt_characters = self.db_manager.get_all_characters(character_info.name)
@@ -168,7 +168,7 @@ class CLI:
                 table.add_column("Current Points", justify="right", style="red")
                 
                 for index, character in enumerate(top_characters, start=1):
-                    table.add_row(str(index), character.name, character.class_name, str(character.points.current))
+                    table.add_row(str(index), character.name, character.class_name, str(character.current_with_twink))
                 
                 self.console.print(table)
             else:

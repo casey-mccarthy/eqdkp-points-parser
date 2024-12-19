@@ -16,6 +16,7 @@ from utils.progress import ProgressManager
 from rich.console import Console
 from core.database import DatabaseManager
 from core.data_parser import DataParser
+
 logger = get_logger(__name__)
 
 class EQDKPParserApp:
