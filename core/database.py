@@ -38,9 +38,6 @@ class DatabaseManager:
         # should only return main characters
         characters = session.query(Character).filter(Character.main_id == Character.id).order_by(desc(Character.current_with_twink)).limit(count).all()
 
-        for character in characters:
-            print(f"Character: {character.name}, Current Points: {character.current_with_twink}")
-
         return characters
         
       
