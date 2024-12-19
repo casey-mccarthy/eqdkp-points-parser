@@ -153,13 +153,26 @@ class CLI:
 
     def _handle_top_display(self, args: List[str]) -> None:
         """Handle top N display command."""
-        if self.data is None:
-            self.console.print("[bold red]No data available![/bold red]")
-            return
-
         try:
             count = int(args[0]) if args else IntPrompt.ask("Enter number of characters to show", default=5)
-            self.display.display_data(self.data, top=count)
+            
+            # Query the database for the top N characters by points
+            top_characters = self.db_manager.get_top_characters_by_points(count)
+            
+            if top_characters:
+                # Create a rich table to display the top characters
+                table = Table(title=f"Top {count} Characters by Points")
+                table.add_column("Rank", style="magenta")
+                table.add_column("Name", style="cyan")
+                table.add_column("Class", style="green")
+                table.add_column("Current Points", justify="right", style="red")
+                
+                for index, character in enumerate(top_characters, start=1):
+                    table.add_row(str(index), character.name, character.class_name, str(character.points.current))
+                
+                self.console.print(table)
+            else:
+                self.console.print("[red]No characters found in the database.[/red]")
         except ValueError:
             self.console.print("[red]Please provide a valid number[/red]")
 

@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 from core.models import Base, Character
 
 class DatabaseManager:
@@ -29,3 +29,12 @@ class DatabaseManager:
         character = session.query(Character).filter(Character.name == character_name).first()
         # return all characters that have the same main_id as the character
         return session.query(Character).filter(Character.main_id == character.main_id).all()
+    
+    def get_top_characters_by_points(self, count: int):
+        """Get the top N characters by their current points."""
+        session = self.get_session()
+        try:
+            # Assuming CharacterPoints is a related model with a 'current' attribute
+            return session.query(Character).options(joinedload(Character.points)).order_by(Character.points.current_with_twink.desc()).limit(count).all()
+        finally:
+            session.close()
