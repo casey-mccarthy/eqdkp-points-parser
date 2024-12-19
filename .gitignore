@@ -7,6 +7,10 @@ aggregated_dkp_points_with_separation.zip
 logs/dkp_log.log.2024-10-28
 logs/dkp_log.log.2024-11-30
 debug_parsed_data.json
-logs/dkp_log.log.2024-12-17
+logs/*
 ranks.xml
 character_data_debug.json
+character_data_dump.json
+character_data_dump.xml
+eqdkp_data.db
+points.xml

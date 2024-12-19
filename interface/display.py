@@ -8,6 +8,8 @@ from rich.table import Table
 from rich.console import Console
 from utils.logger import get_logger
 from utils.character_utils import find_character
+from core.database import DatabaseManager
+from core.models import Character
 
 logger = get_logger(__name__)
 
@@ -17,29 +19,16 @@ class DisplayManager:
     def __init__(self) -> None:
         """Initialize the display manager."""
         self.console = Console()
+        self.db_manager = DatabaseManager()
 
-    def display_data(self, 
-                    data: pd.DataFrame, 
-                    character_name: Optional[str] = None, 
-                    top: Optional[int] = None) -> None:
-        """
-        Display DKP data based on specified filters.
-        
-        Args:
-            data: DataFrame containing the DKP data
-            character_name: Optional name to filter by
-            top: Optional number of top characters to show
-        """
+    def display_data(self) -> None:
+        session = self.db_manager.get_session()
+        characters = session.query(Character).all()
         table = self._create_table("Aggregated DKP Points")
         
-        if character_name:
-            self._display_character(data, character_name, table)
-        elif top:
-            self._display_top(data, top, table)
-        else:
-            # Display all characters if no filter is specified
-            self._display_top(data, len(data), table)
-            
+        for char in characters:
+            table.add_row(str(char.id), char.name, ', '.join(alt.name for alt in char.alts), str(char.points_current))
+        
         self.console.print(table)
         logger.info("Data display completed successfully")
 

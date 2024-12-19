@@ -1,9 +1,12 @@
 from typing import Optional
-import os
 import requests
 from rich.console import Console
-from rich.progress import Progress
 from utils.logger import get_logger
+from core.database import DatabaseManager
+from core.models import Character
+from core.api_refs import APIReadPaths
+import xml.etree.ElementTree as ET
+from typing import List, Dict, Optional
 
 logger = get_logger(__name__)
 
@@ -14,44 +17,68 @@ class DataFetcher:
         """Initialize the DataFetcher."""
         self.console = Console()
         self.base_url = "https://dkp.kwsm.app/api.php"
+        self.db_manager = DatabaseManager()
 
-    def fetch_data(self, api_token: str, output_file: str = "response.xml") -> Optional[str]:
+    def fetch_character_data(self, api_token: str) -> Optional[str]:
         """
-        Fetch points data from the API and save to file.
+        Fetch points data from the API and return the XML data.
         
         Args:
             api_token: The API token for authentication
-            output_file: The file path to save the XML response
-            
+        
         Returns:
-            str: Path to the saved XML file if successful, None otherwise
+            The raw XML data as a string, or None if the request fails.
         """
         logger.info("Starting data fetch...")
         
         api_url = f"{self.base_url}?function=points&atoken={api_token}&atype=api"
 
         try:
-            with Progress(console=self.console, transient=True) as progress:
-                task = progress.add_task("[cyan]Fetching points data...", total=100)
-                response = requests.get(api_url)
-                progress.update(task, completed=100)
-
+            response = requests.get(api_url)
             if response.status_code == 200:
-                with open(output_file, 'w', encoding='utf-8') as file:
-                    file.write(response.text)
-                logger.info(f"Data successfully saved to {output_file}")
-                return output_file
+                logger.info("Data successfully fetched from the API")
+                logger.debug(f"Response content type: {type(response.text)}")
+                logger.debug(f"First 200 characters of response: {response.text[:200]}")
+
+                # save to file
+                with open("points.xml", "w") as f:
+                    f.write(response.text)
+
+                return response.text  # Ensure this is being handled correctly
             else:
-                error_msg = f"Failed to fetch data. Status: {response.status_code}"
-                logger.error(error_msg)
-                self.console.print(f"[bold red]{error_msg}[/bold red]")
+                logger.error(f"Failed to fetch data. Status: {response.status_code}")
                 return None
 
         except Exception as e:
-            error_msg = f"An error occurred: {e}"
-            logger.error(error_msg)
-            self.console.print(f"[bold red]{error_msg}[/bold red]")
+            logger.error(f"An error occurred: {e}")
             return None
+
+    def fetch_ranks_data(self, api_token: str) -> Optional[str]:    
+        """
+        Fetch ranks data from the API and return the XML data.
+        
+        Args:
+            api_token: The API token for authentication
+        
+        Returns:
+            The raw XML data as a string, or None if the request fails.
+        """
+        api_url = f"{self.base_url}?function=character_ranks&atoken={api_token}&atype=api"
+
+        try:
+            response = requests.get(api_url)
+            if response.status_code == 200:
+                logger.info("Ranks data successfully fetched from the API")
+
+
+                return response.text
+            else:
+                logger.error(f"Failed to fetch ranks data. Status: {response.status_code}")
+                return None
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
+            return None
+        
 
     def debug_response(self, response: requests.Response, file_path: str) -> None:
         """
@@ -77,3 +104,4 @@ class DataFetcher:
             logger.error(f"File not found: {file_path}")
         except Exception as e:
             logger.error(f"Error reading file: {e}")
+

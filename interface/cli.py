@@ -11,7 +11,8 @@ from interface.display import DisplayManager
 from utils.logger import get_logger
 import pandas as pd
 from core.bidding_manager import BiddingManager
-
+from core.database import DatabaseManager
+from rich.table import Table
 logger = get_logger(__name__)
 
 @dataclass
@@ -25,7 +26,7 @@ class Command:
 class CLI:
     """Handles command-line interface operations."""
     
-    def __init__(self, data: Optional[pd.DataFrame] = None) -> None:
+    def __init__(self) -> None:
         """
         Initialize the CLI interface.
         
@@ -33,9 +34,10 @@ class CLI:
             data: DataFrame containing the processed DKP data
         """
         self.console = Console()
-        self.data = data
+        # add database manager
+        self.db_manager = DatabaseManager()
         self.display = DisplayManager()
-        self.bidding_manager = BiddingManager(data)
+        self.bidding_manager = BiddingManager()
         self.commands = {
             "character": Command(
                 name="character",
@@ -122,22 +124,55 @@ class CLI:
 
     def _handle_character_search(self, args: List[str]) -> None:
         """Handle character search command."""
-        if self.data is None:
-            self.console.print("[bold red]No data available![/bold red]")
-            return
+        character_name = args[0] if args else Prompt.ask("Enter character name")
+        
+        # Query the database for the character
+        character_info = self.db_manager.get_character_by_name(character_name)
+        
+        if character_info:
+            # Display character information
+            table = Table(title=f"Character: {character_info.name}")
+            table.add_column("Attribute", style="magenta")
+            table.add_column("Value", style="cyan")
+      
+            
+            table.add_row("ID", str(character_info.id))
+            table.add_row("Name", character_info.name)
+            table.add_row("Class", character_info.class_name)
+            table.add_row("Rank", character_info.rank_name or "N/A")
+            table.add_row("MMBz (C)", str(character_info.current_with_twink), style="green")
+            table.add_row("MMBz (L)", str(character_info.earned_with_twink), style="yellow")
 
-        character = args[0] if args else Prompt.ask("Enter character name")
-        self.display.display_data(self.data, character_name=character)
+            # add all other alt characters (exclude the provided character) with this format: <name> (<class>)
+            alt_characters = self.db_manager.get_all_characters(character_info.name)
+            alt_characters_str = "\n".join([f"{alt.name} ({alt.rank_name})" for alt in alt_characters if alt.name != character_info.name])
+            table.add_row("Alts", alt_characters_str, style="red")
+            self.console.print(table)
+        else:
+            self.console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
 
     def _handle_top_display(self, args: List[str]) -> None:
         """Handle top N display command."""
-        if self.data is None:
-            self.console.print("[bold red]No data available![/bold red]")
-            return
-
         try:
             count = int(args[0]) if args else IntPrompt.ask("Enter number of characters to show", default=5)
-            self.display.display_data(self.data, top=count)
+            
+            # Query the database for the top N characters by points
+            top_characters = self.db_manager.get_top_characters_by_points(count)
+            
+            if top_characters:
+                # Create a rich table to display the top characters
+                table = Table(title=f"Top {count} Characters by Points")
+                table.add_column("Rank", style="magenta")
+                table.add_column("Name", style="cyan")
+                table.add_column("Class", style="green")
+                table.add_column("Current Points", justify="right", style="red")
+                
+                for index, character in enumerate(top_characters, start=1):
+                    table.add_row(str(index), character.name, character.class_name, str(character.current_with_twink))
+                
+                self.console.print(table)
+            else:
+                self.console.print("[red]No characters found in the database.[/red]")
         except ValueError:
             self.console.print("[red]Please provide a valid number[/red]")
 
@@ -159,28 +194,29 @@ class CLI:
         Args:
             args: Optional list of command arguments (unused)
         """
-        help_text = """
-[bold cyan]Available Commands[/bold cyan]
+        self.display_help()
 
-[green]Search Character[/green]
-  command: character, c
-  usage: c dainae
+    def display_help(self) -> None:
+        """Display help information as a rich table."""
+        # Define the commands and their details
+        commands = [
+            ("character <name> or c <name>", "Display information about a specific character."),
+            ("top <number> or t <number>", "Display the top N characters by points."),
+            ("bid or b", "Enter bidding mode."),
+            ("exit or e", "Exit the application.")
+        ]
 
-[green]Show Top Characters[/green]
-  command: top, t
-  usage: t 10
+        # Create a rich table
+        table = Table(title="Help - Command List")
+        table.add_column("Command", style="cyan", no_wrap=True)
+        table.add_column("Details", style="magenta")
 
-[green]Enter Bidding Mode[/green]
-  command: bid, b
-  usage: b
+        # Add each command and its details to the table
+        for command, details in commands:
+            table.add_row(command, details)
 
-[green]Show Help[/green]
-  command: help, h
-
-[green]Exit Application[/green]
-  command: exit, e
-"""
-        self.console.print(help_text)
+        # Print the table to the console
+        self.console.print(table)
 
     def _handle_exit(self, args: List[str] = None) -> None:
         """

@@ -11,6 +11,7 @@ class AppConfig:
     """Application configuration settings."""
     
     api_key: Optional[str]
+    admin_api_key: Optional[str]
     xml_output_file: str = "response.xml"
     csv_output_file: str = "processed_data.csv"
     log_directory: str = "logs"
@@ -27,4 +28,5 @@ class AppConfig:
         
         return cls(
             api_key=os.getenv('API_KEY_CORE_READ'),
+            admin_api_key=os.getenv('API_ADMIN_KEY')
         )

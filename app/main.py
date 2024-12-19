@@ -1,20 +1,21 @@
 """
 Main entry point for the EQDKP Parser application.
 """
-from typing import NoReturn
+from typing import NoReturn, List
 import sys
 import os
-import logging
 import pyfiglet
+from xml.etree import ElementTree as ET
 
 from app.config import AppConfig
 from core.data_fetcher import DataFetcher
-from core.data_parser import DataParser
-from core.data_processor import DataProcessor
+from core.models import Character
 from interface.cli import CLI
 from utils.logger import get_logger
 from utils.progress import ProgressManager
 from rich.console import Console
+from core.database import DatabaseManager
+from core.data_parser import DataParser
 
 logger = get_logger(__name__)
 
@@ -26,10 +27,10 @@ class EQDKPParserApp:
         self.config = AppConfig.load()
         self.data_fetcher = DataFetcher()
         self.data_parser = DataParser()
-        self.data_processor = DataProcessor()
         self.progress = ProgressManager()
         self.console = Console()
         self.cli = None
+        self.db_manager = DatabaseManager()
         
         logger.info("Application initialized")
 
@@ -40,7 +41,7 @@ class EQDKPParserApp:
         This method orchestrates the main application flow:
         1. Validates configuration
         2. Fetches data from API
-        3. Parses and processes the data
+        3. Processes the data
         4. Starts the CLI interface
         """
         try:
@@ -49,8 +50,9 @@ class EQDKPParserApp:
             self.console.print(f"[bold cyan]{ascii_art}[/bold cyan]")
             
             self._validate_config()
-            processed_data = self._fetch_and_process_data()
-            self.cli = CLI(processed_data)
+            self._fetch_character_data()
+            self._fetch_ranks_data()
+            self.cli = CLI()
             self.cli.start()
             
         except Exception as e:
@@ -67,35 +69,29 @@ class EQDKPParserApp:
             raise ValueError("API key not found in environment variables")
         logger.info("Configuration validated")
 
-    def _fetch_and_process_data(self) -> None:
-        """Fetch, parse, and process the DKP data."""
-        # Fetch XML data
-        self.progress.show_progress("Fetching data from API...", success=False)
-        xml_file = self.data_fetcher.fetch_data(
-            self.config.api_key,
-            self.config.xml_output_file
-        )
-        if not xml_file:
-            raise RuntimeError("Failed to fetch data from API")
-        self.progress.show_progress("Data successfully saved to response.xml")
+    def _fetch_character_data(self) -> None:
+        """Fetch character data from the API and update the local list of characters."""
+        self.progress.show_progress("Fetching character data from API...", success=False)
+        character_data = self.data_fetcher.fetch_character_data(self.config.api_key)
 
-        # Parse XML data
-        self.progress.show_progress("Parsing the fetched data...", success=False)
-        parsed_data = self.data_parser.parse_xml(xml_file)
-        if not parsed_data:
-            raise RuntimeError("Failed to parse XML data")
+        # Parse the XML data and save to database
+        try:    
+            self.progress.show_progress("Parsing character data...", success=False)
+            self.data_parser.parse_character_data(character_data)
 
-        # Process data
-        self.progress.show_progress("Processing parsed data...", success=False)
-        processed_data = self.data_processor.process_data(
-            parsed_data,
-            self.config.csv_output_file
-        )
-        if processed_data.empty:
-            raise RuntimeError("No data processed")
+        except Exception as e:
+            self.progress.show_progress("Error parsing XML data", success=False)
+            logger.error(f"Error parsing XML data: {e}")
+            return
+        
+        self.progress.show_progress("Character data successfully fetched and updated")
 
-        self.progress.show_progress("Data processing completed, entering print menu...")
-        return processed_data
+    def _fetch_ranks_data(self) -> None:
+        """Fetch ranks data from the API and update the local list of ranks."""
+        self.progress.show_progress("Fetching ranks data from API...", success=False)
+        ranks_data = self.data_fetcher.fetch_ranks_data(self.config.admin_api_key)
+        self.data_parser.parse_character_rank_data(ranks_data)
+        self.progress.show_progress("Ranks data successfully fetched and updated")  
 
 def main(debug: bool = False) -> None:
     """
