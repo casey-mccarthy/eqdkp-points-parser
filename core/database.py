@@ -22,3 +22,10 @@ class DatabaseManager:
         character.rank_id = rank_id
         character.rank_name = rank_name
         session.commit()
+
+    def get_all_characters(self, character_name: str):
+        # given a character name, lookup the main character and return all characters that are alts of that main character
+        session = self.get_session()
+        character = session.query(Character).filter(Character.name == character_name).first()
+        # return all characters that have the same main_id as the character
+        return session.query(Character).filter(Character.main_id == character.main_id).all()
