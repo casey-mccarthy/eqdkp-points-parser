@@ -1,3 +1,20 @@
+# [0.3.0](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.2.0...v0.3.0) (2024-12-19)
+
+
+### Bug Fixes
+
+* correct character points attribute reference in BiddingManager ([e987fbd](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/e987fbd5e6a310cbf5bc705472bfb268d37184f7))
+
+
+### Features
+
+* add admin API key and fetch character ranks data ([c80b557](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/c80b557696adb9bd3cc20673dfea03c1d66aca47))
+* add top characters retrieval feature in DatabaseManager and CLI ([fb4048b](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/fb4048be77a5015f186132b76f83e002540da525))
+* enhance character management in CLI and database ([4c472df](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/4c472df3b4f7c5fe40aa0c0663b00cd59ecf48fe))
+* integrate SQLAlchemy and refactor data handling in EQDKP Parser ([c77fcd9](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/c77fcd979e9f6d25dc91cb7a4a1d982a15ca8874))
+
+
+
 # [0.2.0](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.1.0...v0.2.0) (2024-12-18)
 
 
