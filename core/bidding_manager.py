@@ -29,7 +29,7 @@ class BiddingManager:
         if character_info is not None:
             main_character = character_info.name
             character_rank = character_info.rank_name
-            points_current = character_info.points.current_with_twink
+            points_current = character_info.current_with_twink
 
             # Check if the main character is already in the current bid
             if any(char['main_character'].lower() == main_character.lower() for char in self.current_bid):
