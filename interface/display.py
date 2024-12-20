@@ -27,7 +27,7 @@ class DisplayManager:
         table = self._create_table("Aggregated DKP Points")
         
         for char in characters:
-            table.add_row(str(char.id), char.name, ', '.join(alt.name for alt in char.alts), str(char.points_current))
+            table.add_row(str(char.id), char.name, ', '.join(alt.name for alt in char.alts), str(char.current_with_twink))
         
         self.console.print(table)
         logger.info("Data display completed successfully")
@@ -38,7 +38,8 @@ class DisplayManager:
         table.add_column("ID", justify="right", style="cyan", no_wrap=True)
         table.add_column("Main Character", style="magenta")
         table.add_column("Alts", style="green")
-        table.add_column("Current Points", justify="right", style="red")
+        table.add_column("MMBz (C)", justify="right", style="red")
+        table.add_column("MMBz (L)", justify="right", style="yellow")
         return table
 
     def _display_character(self, data: pd.DataFrame, character_name: str, table: Table) -> None:

@@ -129,27 +129,32 @@ class CLI:
         # Query the database for the character
         character_info = self.db_manager.get_character_by_name(character_name)
         
-        if character_info:
-            # Display character information
-            table = Table(title=f"Character: {character_info.name}")
-            table.add_column("Attribute", style="magenta")
-            table.add_column("Value", style="cyan")
-      
-            
-            table.add_row("ID", str(character_info.id))
-            table.add_row("Name", character_info.name)
-            table.add_row("Class", character_info.class_name)
-            table.add_row("Rank", character_info.rank_name or "N/A")
-            table.add_row("MMBz (C)", str(character_info.current_with_twink), style="green")
-            table.add_row("MMBz (L)", str(character_info.earned_with_twink), style="yellow")
-
-            # add all other alt characters (exclude the provided character) with this format: <name> (<class>)
-            alt_characters = self.db_manager.get_all_characters(character_info.name)
-            alt_characters_str = "\n".join([f"{alt.name} ({alt.rank_name})" for alt in alt_characters if alt.name != character_info.name])
-            table.add_row("Alts", alt_characters_str, style="red")
-            self.console.print(table)
-        else:
+        # Check if character_info is None and print an error message
+        if not character_info:
             self.console.print(f"[bold red]Character '{character_name}' not found![/bold red]")
+            return
+        
+        alt_characters = self.db_manager.get_all_characters(character_info.name)
+        alt_characters_str = "\n".join([f"{alt.name} ({alt.rank_name})" for alt in alt_characters if alt.name != character_info.name])
+        
+        # Display character information
+        table = Table(title=f"Character: {character_info.name}")
+        table.add_column("ID", style="cyan")
+        table.add_column("Main Character", style="magenta")
+        table.add_column("Alts", style="green")
+        table.add_column("MMBz (C)", style="red")
+        table.add_column("MMBz (L)", style="yellow")
+
+        # add a single row with the main character info
+        table.add_row(
+            str(character_info.id),
+            f"[bold]{character_info.name}[/bold] ({character_info.rank_name})",
+            alt_characters_str,
+            str(character_info.current_with_twink),
+            str(character_info.earned_with_twink)
+        )
+
+        self.console.print(table)
 
     def _handle_top_display(self, args: List[str]) -> None:
         """Handle top N display command."""
