@@ -48,7 +48,7 @@ Assuming you already have Python installed, follow these steps to set up the pro
 5. **Create a `.env` file**:
    If missing, the script will create a `.env` file and prompt you to set up your API key during runtime. The `.env` file should look like this:
    ```
-   API_KEY_CORE_READ=your_api_key_here
+   API_KEY=your_api_key_here
    ```
    This key can be located under your `Private API-Key` section of your profile on the EQDKP site.
 
