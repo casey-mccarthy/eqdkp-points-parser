@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.3.0...v0.3.1) (2024-12-20)
+
+
+### Bug Fixes
+
+* improve character information display in CLI and update data handling ([fd8875d](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/fd8875d9a15a04b4a33a80529364c279cb1527b0))
+
+
+
 # [0.3.0](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.2.0...v0.3.0) (2024-12-19)
 
 
