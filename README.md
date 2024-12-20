@@ -6,28 +6,16 @@ This project is a DKP (Dragon Kill Points) parser that exports point data from a
 
 Here’s an example of the console output:
 
-![Output](readme/run_example.png)
+![Output](readme/example1.png)
+![Output](readme/example2.png)
 
 ## Features
 
 - **Interactive Command Line Interface**: Provides an interactive CLI for viewing data.
 - **Fetch Data from API**: Securely fetches data from a remote API using an API key stored in an environment file.
-- **Main and Alt Character Processing**: Identifies and separates main characters from their alts, ensuring alts are only processed after all mains have been identified.
-- **Data Aggregation**: Collects point information including current, earned, spent, and adjusted points for each main character.
+- **Character Query**: Search for a character, their status, and their earned points.
+- **Top N Characters**: View the top N characters by earned points.
 - **Bidding Mode**: Allows users to enter a bidding mode to manage character bids interactively.
-
-
-## Data Model
-
-The output data model is as follows:
-- **id**: Main character's ID (integer).
-- **main_character**: Main character's name (string).
-- **alts**: List of tuples containing (ID, name) for each alt associated with the main character.
-- **points**: A dictionary containing the following point values:
-  - **earned**: Total points earned.
-  - **spent**: Total points spent.
-  - **adjusted**: Total points adjusted.
-  - **current**: Current points.
 
 ## Installation
 
@@ -91,21 +79,6 @@ Assuming you already have Python installed, follow these steps to set up the pro
      ```plaintext
      exit or e
      ```
-
-## Logging
-
-Logs are stored in a file named `main_script.log` in the project directory. The log captures all key steps and associations during processing, as well as user commands and errors.
-
-
-## Requirements
-
-- **Python 3.x**
-- **pandas** library
-- **prettytable** library
-- **rich** library
-- **requests** library
-- **dotenv** library
-- **pyfiglet** library
 
 ## Author
 
