@@ -56,7 +56,7 @@ Assuming you already have Python installed, follow these steps to set up the pro
 
 1. **Run the main script**:
    ```bash
-   python main.py
+   python run.py
    ```
 
 2. **Follow the prompts** to set up your API key if required.
