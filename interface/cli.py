@@ -74,7 +74,6 @@ class CLI:
     def start(self) -> None:
         """Start the CLI interface."""
         self._display_welcome()
-        self._check_environment()
         self._command_loop()
 
     def _display_welcome(self) -> None:
@@ -82,11 +81,6 @@ class CLI:
         self.console.print("[cyan]Data fetched and processed successfully![/cyan]")
         self._handle_help()
 
-    def _check_environment(self) -> None:
-        """Check if required environment variables are set."""
-        if not os.getenv('API_KEY_CORE_READ'):
-            logger.warning("API key not found in environment")
-            self.console.print("[bold red]Warning: API key not found in environment[/bold red]")
 
     def _command_loop(self) -> None:
         """Main command processing loop."""

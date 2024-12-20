@@ -1,9 +1,6 @@
 import os
 import requests
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
 
 # Environment Variable for Base URL
 BASE_URL = os.getenv("BASE_URL", "https://dkp.kwsm.app")

@@ -49,7 +49,6 @@ class EQDKPParserApp:
             ascii_art = pyfiglet.figlet_format("EQDKP Parser", font="slant")
             self.console.print(f"[bold cyan]{ascii_art}[/bold cyan]")
             
-            self._validate_config()
             self._fetch_character_data()
             self._fetch_ranks_data()
             self.cli = CLI()
@@ -63,11 +62,6 @@ class EQDKPParserApp:
                 print(f"Fatal error: {e}")
             sys.exit(1)
 
-    def _validate_config(self) -> None:
-        """Validate required configuration settings."""
-        if not self.config.api_key:
-            raise ValueError("API key not found in environment variables")
-        logger.info("Configuration validated")
 
     def _fetch_character_data(self) -> None:
         """Fetch character data from the API and update the local list of characters."""
@@ -89,7 +83,7 @@ class EQDKPParserApp:
     def _fetch_ranks_data(self) -> None:
         """Fetch ranks data from the API and update the local list of ranks."""
         self.progress.show_progress("Fetching ranks data from API...", success=False)
-        ranks_data = self.data_fetcher.fetch_ranks_data(self.config.admin_api_key)
+        ranks_data = self.data_fetcher.fetch_ranks_data(self.config.api_key)
         self.data_parser.parse_character_rank_data(ranks_data)
         self.progress.show_progress("Ranks data successfully fetched and updated")  
 
