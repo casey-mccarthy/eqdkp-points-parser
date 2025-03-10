@@ -1,3 +1,12 @@
+## [0.3.2](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.3.1...v0.3.2) (2025-03-10)
+
+
+### Bug Fixes
+
+* add comprehensive contribution guidelines to README ([b42331d](https://github.com/casey-mccarthy/eqdkp-points-parser/commit/b42331db0e37046286c40540c541a89218aef208))
+
+
+
 ## [0.3.1](https://github.com/casey-mccarthy/eqdkp-points-parser/compare/v0.3.0...v0.3.1) (2024-12-20)
 
 
