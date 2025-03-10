@@ -3,8 +3,9 @@ Logging configuration module.
 """
 import logging
 import os
-from logging.handlers import TimedRotatingFileHandler
+from logging.handlers import RotatingFileHandler
 from typing import Optional
+import atexit
 
 def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     """
@@ -27,18 +28,14 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
         os.makedirs('logs', exist_ok=True)
         
         # File handler (always writes to file)
-        file_handler = TimedRotatingFileHandler(
-            filename=os.path.join('logs', 'dkp_log.log'),
-            when='midnight',
-            interval=1,
-            backupCount=30,
-            encoding='utf-8'
-        )
-        file_handler.setFormatter(logging.Formatter(
+        log_file = os.path.join('logs', 'dkp_log.log')
+        handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=5, delay=True)
+        formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
-        ))
-        logger.addHandler(file_handler)
+        )
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
         
         # Console handler (only shows in debug mode)
         console_handler = logging.StreamHandler()
@@ -56,3 +53,8 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
         logger.addHandler(console_handler)
     
     return logger
+
+# Ensure proper closure of handlers on application exit
+@atexit.register
+def shutdown_logging():
+    logging.shutdown()
