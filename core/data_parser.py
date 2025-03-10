@@ -1,8 +1,5 @@
-from typing import Dict, List, Any
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass
 from utils.logger import get_logger
-import pandas as pd
 from core.database import DatabaseManager
 from core.models import Character
 

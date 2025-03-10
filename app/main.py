@@ -1,15 +1,13 @@
 """
 Main entry point for the EQDKP Parser application.
 """
-from typing import NoReturn, List
+from typing import NoReturn
 import sys
 import os
 import pyfiglet
-from xml.etree import ElementTree as ET
 
 from app.config import AppConfig
 from core.data_fetcher import DataFetcher
-from core.models import Character
 from interface.cli import CLI
 from utils.logger import get_logger
 from utils.progress import ProgressManager
