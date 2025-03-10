@@ -1,9 +1,8 @@
 """
 Display management module for rendering data in the terminal.
 """
-from typing import Dict, Any, List, Optional
+
 import pandas as pd
-import random
 from rich.table import Table
 from rich.console import Console
 from utils.logger import get_logger
