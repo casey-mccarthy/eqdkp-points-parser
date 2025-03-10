@@ -4,7 +4,7 @@ This project is a DKP (Dragon Kill Points) parser that exports point data from a
 
 ## Example Output
 
-Here’s an example of the console output:
+Here's an example of the console output:
 
 ![Output](readme/example1.png)
 ![Output](readme/example2.png)
@@ -79,6 +79,49 @@ Assuming you already have Python installed, follow these steps to set up the pro
      ```plaintext
      exit or e
      ```
+
+# Contribution Guidelines
+
+We welcome contributions to the EQDKP Parser project! To maintain a clean and understandable commit history, please follow these guidelines when making contributions.
+
+## Commit Message Tags
+
+Use the following tags at the beginning of your commit messages to indicate the type of change you are making:
+
+- **feat**: A new feature
+- **fix**: A bug fix
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **chore**: Changes to the build process or auxiliary tools and libraries such as documentation generation
+
+## Example Commit Messages
+
+- `feat: add new API endpoint for character data`
+- `fix: resolve issue with data parsing`
+- `docs: update README with contribution guidelines`
+- `style: format code with black`
+- `refactor: improve logging configuration`
+- `perf: optimize database queries`
+- `test: add unit tests for data fetcher`
+- `chore: update dependencies`
+
+## Versioning
+
+We use [Semantic Versioning](https://semver.org/) for versioning. For the versions available, see the tags on this repository.
+
+## How to Contribute
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/your-feature-name`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'feat: add some feature'`)
+5. Push to the branch (`git push origin feature/your-feature-name`)
+6. Open a pull request
+
+Thank you for your contributions!
 
 ## Author
 
