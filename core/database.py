@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, desc
-from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy.orm import sessionmaker
 from core.models import Base, Character
 
 class DatabaseManager:
