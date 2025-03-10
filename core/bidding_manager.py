@@ -1,4 +1,3 @@
-from typing import List, Optional
 from rich.console import Console
 from rich.table import Table
 from core.database import DatabaseManager

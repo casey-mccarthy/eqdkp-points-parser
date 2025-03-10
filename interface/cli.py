@@ -1,15 +1,12 @@
 """
 Command Line Interface module for user interaction.
 """
-from typing import Dict, Any, Optional, List
+from typing import List
 from dataclasses import dataclass
-import os
 from rich.console import Console
 from rich.prompt import Prompt, IntPrompt
-import pyfiglet
 from interface.display import DisplayManager
 from utils.logger import get_logger
-import pandas as pd
 from core.bidding_manager import BiddingManager
 from core.database import DatabaseManager
 from rich.table import Table
