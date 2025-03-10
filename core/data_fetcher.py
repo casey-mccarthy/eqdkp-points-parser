@@ -3,10 +3,7 @@ import requests
 from rich.console import Console
 from utils.logger import get_logger
 from core.database import DatabaseManager
-from core.models import Character
-from core.api_refs import APIReadPaths
-import xml.etree.ElementTree as ET
-from typing import List, Dict, Optional
+
 
 logger = get_logger(__name__)
 
@@ -97,7 +94,7 @@ class DataFetcher:
         try:
             with open(file_path, 'r') as f:
                 content = f.read()
-                logger.debug(f"Saved file exists: True")
+                logger.debug("Saved file exists: True")
                 logger.debug(f"File size: {len(content)} bytes")
                 logger.debug(f"First 200 characters of file: {content[:200]}")
         except FileNotFoundError:
