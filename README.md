@@ -26,26 +26,25 @@ Assuming you already have Python installed, follow these steps to set up the pro
    git clone https://github.com/casey-mccarthy/eqdkp-points-parser.git
    ```
 
-2. **Set up a virtual environment**:
+2. **Install Astral-UV**:
+   Astral-UV is used for package management in this project. Install it using one of the following commands based on your operating system:
+
+   - **On macOS/Linux**:
+     ```bash
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+
+   - **On Windows**:
+     ```powershell
+     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+     ```
+
+5. **Install dependencies and environment using Astral-UV**:
    ```bash
-   python -m venv venv
+   uv sync
    ```
 
-3. **Activate the virtual environment**:
-   ```bash
-   # On Windows:
-   .\venv\Scripts\activate
-
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
-
-4. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-5. **Create a `.env` file**:
+6. **Create a `.env` file**:
    If missing, the script will create a `.env` file and prompt you to set up your API key during runtime. The `.env` file should look like this:
    ```
    API_KEY=your_api_key_here
@@ -56,7 +55,7 @@ Assuming you already have Python installed, follow these steps to set up the pro
 
 1. **Run the main script**:
    ```bash
-   python run.py
+   uv run run.py
    ```
 
 2. **Follow the prompts** to set up your API key if required.
