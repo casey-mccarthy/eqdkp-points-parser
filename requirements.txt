@@ -14,7 +14,7 @@ pygments==2.18.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
-requests==2.32.3
+requests==2.32.4
 rich==13.9.3
 six==1.16.0
 tzdata==2024.2
